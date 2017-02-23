@@ -1,0 +1,1762 @@
+<!DOCTYPE html>
+<!-- saved from url=(0063)http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html -->
+<html class="v2" dir="ltr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta content="width=1100" name="viewport">
+
+<meta content="blogger" name="generator">
+<link href="http://yveaux.blogspot.com/favicon.ico" rel="icon" type="image/x-icon">
+<link href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html" rel="canonical">
+<link rel="alternate" type="application/atom+xml" title="Embedded Innovation - Atom" href="http://yveaux.blogspot.com/feeds/posts/default">
+<link rel="alternate" type="application/rss+xml" title="Embedded Innovation - RSS" href="http://yveaux.blogspot.com/feeds/posts/default?alt=rss">
+<link rel="service.post" type="application/atom+xml" title="Embedded Innovation - Atom" href="https://www.blogger.com/feeds/1578010460921274916/posts/default">
+
+<link rel="alternate" type="application/atom+xml" title="Embedded Innovation - Atom" href="http://yveaux.blogspot.com/feeds/6853369581807800535/comments/default">
+<!--[if IE]><script type="text/javascript" src="https://www.blogger.com/static/v1/jsbin/4111605327-ieretrofit.js"></script>
+<![endif]-->
+<link href="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/nRF24L01.png" rel="image_src">
+<meta content="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html" property="og:url">
+<meta content="nRF24L01+ sniffer - part 2" property="og:title">
+<meta content=" Hardware   The requirement to use cheap commodity hardware resulted in the use of a standard Arduino Uno R3  and a single nRF24L01+ module ..." property="og:description">
+<meta content="http://1.bp.blogspot.com/-dp_UoaD5OAs/U9P_W3dq-QI/AAAAAAAAAF0/jaaJh634KhI/w1200-h630-p-k-nu/nRF24L01.png" property="og:image">
+<!--[if IE]> <script> (function() { var html5 = ("abbr,article,aside,audio,canvas,datalist,details," + "figure,footer,header,hgroup,mark,menu,meter,nav,output," + "progress,section,time,video").split(','); for (var i = 0; i < html5.length; i++) { document.createElement(html5[i]); } try { document.execCommand('BackgroundImageCache', false, true); } catch(e) {} })(); </script> <![endif]-->
+<title>Embedded Innovation: nRF24L01+ sniffer - part 2</title>
+<link type="text/css" rel="stylesheet" href="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/1691512649-css_bundle_v2.css">
+<link type="text/css" rel="stylesheet" href="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/authorization.css">
+<style id="page-skin-1" type="text/css"><!--
+/*
+-----------------------------------------------
+Blogger Template Style
+Name:     Awesome Inc.
+Designer: Tina Chen
+URL:      tinachen.org
+----------------------------------------------- */
+/* Variable definitions
+====================
+<Variable name="keycolor" description="Main Color" type="color" default="#ffffff"/>
+<Group description="Page" selector="body">
+<Variable name="body.font" description="Font" type="font"
+default="normal normal 13px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="body.background.color" description="Background Color" type="color" default="#000000"/>
+<Variable name="body.text.color" description="Text Color" type="color" default="#ffffff"/>
+</Group>
+<Group description="Links" selector=".main-inner">
+<Variable name="link.color" description="Link Color" type="color" default="#888888"/>
+<Variable name="link.visited.color" description="Visited Color" type="color" default="#444444"/>
+<Variable name="link.hover.color" description="Hover Color" type="color" default="#cccccc"/>
+</Group>
+<Group description="Blog Title" selector=".header h1">
+<Variable name="header.font" description="Title Font" type="font"
+default="normal bold 40px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="header.text.color" description="Title Color" type="color" default="#ffffff" />
+<Variable name="header.background.color" description="Header Background" type="color" default="transparent" />
+</Group>
+<Group description="Blog Description" selector=".header .description">
+<Variable name="description.font" description="Font" type="font"
+default="normal normal 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="description.text.color" description="Text Color" type="color"
+default="#ffffff" />
+</Group>
+<Group description="Tabs Text" selector=".tabs-inner .widget li a">
+<Variable name="tabs.font" description="Font" type="font"
+default="normal bold 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="tabs.text.color" description="Text Color" type="color" default="#ffffff"/>
+<Variable name="tabs.selected.text.color" description="Selected Color" type="color" default="#ffffff"/>
+</Group>
+<Group description="Tabs Background" selector=".tabs-outer .PageList">
+<Variable name="tabs.background.color" description="Background Color" type="color" default="#141414"/>
+<Variable name="tabs.selected.background.color" description="Selected Color" type="color" default="#444444"/>
+<Variable name="tabs.border.color" description="Border Color" type="color" default="#000000"/>
+</Group>
+<Group description="Date Header" selector=".main-inner .widget h2.date-header, .main-inner .widget h2.date-header span">
+<Variable name="date.font" description="Font" type="font"
+default="normal normal 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="date.text.color" description="Text Color" type="color" default="#666666"/>
+<Variable name="date.border.color" description="Border Color" type="color" default="#000000"/>
+</Group>
+<Group description="Post Title" selector="h3.post-title, h4, h3.post-title a">
+<Variable name="post.title.font" description="Font" type="font"
+default="normal bold 22px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="post.title.text.color" description="Text Color" type="color" default="#ffffff"/>
+</Group>
+<Group description="Post Background" selector=".post">
+<Variable name="post.background.color" description="Background Color" type="color" default="#000000" />
+<Variable name="post.border.color" description="Border Color" type="color" default="#000000" />
+<Variable name="post.border.bevel.color" description="Bevel Color" type="color" default="#000000"/>
+</Group>
+<Group description="Gadget Title" selector="h2">
+<Variable name="widget.title.font" description="Font" type="font"
+default="normal bold 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="widget.title.text.color" description="Text Color" type="color" default="#ffffff"/>
+</Group>
+<Group description="Gadget Text" selector=".sidebar .widget">
+<Variable name="widget.font" description="Font" type="font"
+default="normal normal 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="widget.text.color" description="Text Color" type="color" default="#ffffff"/>
+<Variable name="widget.alternate.text.color" description="Alternate Color" type="color" default="#666666"/>
+</Group>
+<Group description="Gadget Links" selector=".sidebar .widget">
+<Variable name="widget.link.color" description="Link Color" type="color" default="#46bdbd"/>
+<Variable name="widget.link.visited.color" description="Visited Color" type="color" default="#46bdbd"/>
+<Variable name="widget.link.hover.color" description="Hover Color" type="color" default="#46bdbd"/>
+</Group>
+<Group description="Gadget Background" selector=".sidebar .widget">
+<Variable name="widget.background.color" description="Background Color" type="color" default="#141414"/>
+<Variable name="widget.border.color" description="Border Color" type="color" default="#222222"/>
+<Variable name="widget.border.bevel.color" description="Bevel Color" type="color" default="#000000"/>
+</Group>
+<Group description="Sidebar Background" selector=".column-left-inner .column-right-inner">
+<Variable name="widget.outer.background.color" description="Background Color" type="color" default="transparent" />
+</Group>
+<Group description="Images" selector=".main-inner">
+<Variable name="image.background.color" description="Background Color" type="color" default="transparent"/>
+<Variable name="image.border.color" description="Border Color" type="color" default="transparent"/>
+</Group>
+<Group description="Feed" selector=".blog-feeds">
+<Variable name="feed.text.color" description="Text Color" type="color" default="#ffffff"/>
+</Group>
+<Group description="Feed Links" selector=".blog-feeds">
+<Variable name="feed.link.color" description="Link Color" type="color" default="#46bdbd"/>
+<Variable name="feed.link.visited.color" description="Visited Color" type="color" default="#46bdbd"/>
+<Variable name="feed.link.hover.color" description="Hover Color" type="color" default="#46bdbd"/>
+</Group>
+<Group description="Pager" selector=".blog-pager">
+<Variable name="pager.background.color" description="Background Color" type="color" default="#141414" />
+</Group>
+<Group description="Footer" selector=".footer-outer">
+<Variable name="footer.background.color" description="Background Color" type="color" default="#000000" />
+<Variable name="footer.text.color" description="Text Color" type="color" default="#ffffff" />
+</Group>
+<Variable name="title.shadow.spread" description="Title Shadow" type="length" default="-1px" min="-1px" max="100px"/>
+<Variable name="body.background" description="Body Background" type="background"
+color="#000000"
+default="$(color) none repeat scroll top left"/>
+<Variable name="body.background.gradient.cap" description="Body Gradient Cap" type="url"
+default="none"/>
+<Variable name="body.background.size" description="Body Background Size" type="string" default="auto"/>
+<Variable name="tabs.background.gradient" description="Tabs Background Gradient" type="url"
+default="none"/>
+<Variable name="header.background.gradient" description="Header Background Gradient" type="url" default="none" />
+<Variable name="header.padding.top" description="Header Top Padding" type="length" default="22px" min="0" max="100px"/>
+<Variable name="header.margin.top" description="Header Top Margin" type="length" default="0" min="0" max="100px"/>
+<Variable name="header.margin.bottom" description="Header Bottom Margin" type="length" default="0" min="0" max="100px"/>
+<Variable name="widget.padding.top" description="Widget Padding Top" type="length" default="8px" min="0" max="20px"/>
+<Variable name="widget.padding.side" description="Widget Padding Side" type="length" default="15px" min="0" max="100px"/>
+<Variable name="widget.outer.margin.top" description="Widget Top Margin" type="length" default="0" min="0" max="100px"/>
+<Variable name="widget.outer.background.gradient" description="Gradient" type="url" default="none" />
+<Variable name="widget.border.radius" description="Gadget Border Radius" type="length" default="0" min="0" max="100px"/>
+<Variable name="outer.shadow.spread" description="Outer Shadow Size" type="length" default="0" min="0" max="100px"/>
+<Variable name="date.header.border.radius.top" description="Date Header Border Radius Top" type="length" default="0" min="0" max="100px"/>
+<Variable name="date.header.position" description="Date Header Position" type="length" default="15px" min="0" max="100px"/>
+<Variable name="date.space" description="Date Space" type="length" default="30px" min="0" max="100px"/>
+<Variable name="date.position" description="Date Float" type="string" default="static" />
+<Variable name="date.padding.bottom" description="Date Padding Bottom" type="length" default="0" min="0" max="100px"/>
+<Variable name="date.border.size" description="Date Border Size" type="length" default="0" min="0" max="10px"/>
+<Variable name="date.background" description="Date Background" type="background" color="transparent"
+default="$(color) none no-repeat scroll top left" />
+<Variable name="date.first.border.radius.top" description="Date First top radius" type="length" default="0" min="0" max="100px"/>
+<Variable name="date.last.space.bottom" description="Date Last Space Bottom" type="length"
+default="20px" min="0" max="100px"/>
+<Variable name="date.last.border.radius.bottom" description="Date Last bottom radius" type="length" default="0" min="0" max="100px"/>
+<Variable name="post.first.padding.top" description="First Post Padding Top" type="length" default="0" min="0" max="100px"/>
+<Variable name="image.shadow.spread" description="Image Shadow Size" type="length" default="0" min="0" max="100px"/>
+<Variable name="image.border.radius" description="Image Border Radius" type="length" default="0" min="0" max="100px"/>
+<Variable name="separator.outdent" description="Separator Outdent" type="length" default="15px" min="0" max="100px"/>
+<Variable name="title.separator.border.size" description="Widget Title Border Size" type="length" default="1px" min="0" max="10px"/>
+<Variable name="list.separator.border.size" description="List Separator Border Size" type="length" default="1px" min="0" max="10px"/>
+<Variable name="shadow.spread" description="Shadow Size" type="length" default="0" min="0" max="100px"/>
+<Variable name="startSide" description="Side where text starts in blog language" type="automatic" default="left"/>
+<Variable name="endSide" description="Side where text ends in blog language" type="automatic" default="right"/>
+<Variable name="date.side" description="Side where date header is placed" type="string" default="right"/>
+<Variable name="pager.border.radius.top" description="Pager Border Top Radius" type="length" default="0" min="0" max="100px"/>
+<Variable name="pager.space.top" description="Pager Top Space" type="length" default="1em" min="0" max="20em"/>
+<Variable name="footer.background.gradient" description="Background Gradient" type="url" default="none" />
+<Variable name="mobile.background.size" description="Mobile Background Size" type="string"
+default="auto"/>
+<Variable name="mobile.background.overlay" description="Mobile Background Overlay" type="string"
+default="transparent none repeat scroll top left"/>
+<Variable name="mobile.button.color" description="Mobile Button Color" type="color" default="#ffffff" />
+*/
+/* Content
+----------------------------------------------- */
+body {
+font: normal normal 13px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #ffffff;
+background: #000000 url(//themes.googleusercontent.com/image?id=1i_daHMzkzBNcV-v7uOhVYquMt20FCMbbTFxcHAARidZ6PYKs5-KeUa4Gm0erJ5vHVpot) repeat-x scroll top center /* Credit: enot-poloskun (http://www.istockphoto.com/googleimages.php?id=2904973&platform=blogger) */;
+}
+html body .content-outer {
+min-width: 0;
+max-width: 100%;
+width: 100%;
+}
+a:link {
+text-decoration: none;
+color: #46bdbd;
+}
+a:visited {
+text-decoration: none;
+color: #46bdbd;
+}
+a:hover {
+text-decoration: underline;
+color: #46bdbd;
+}
+.body-fauxcolumn-outer .cap-top {
+position: absolute;
+z-index: 1;
+height: 276px;
+width: 100%;
+background: transparent none repeat-x scroll top left;
+_background-image: none;
+}
+/* Columns
+----------------------------------------------- */
+.content-inner {
+padding: 0;
+}
+.header-inner .section {
+margin: 0 16px;
+}
+.tabs-inner .section {
+margin: 0 16px;
+}
+.main-inner {
+padding-top: 30px;
+}
+.main-inner .column-center-inner,
+.main-inner .column-left-inner,
+.main-inner .column-right-inner {
+padding: 0 5px;
+}
+*+html body .main-inner .column-center-inner {
+margin-top: -30px;
+}
+#layout .main-inner .column-center-inner {
+margin-top: 0;
+}
+/* Header
+----------------------------------------------- */
+.header-outer {
+margin: 0 0 0 0;
+background: transparent none repeat scroll 0 0;
+}
+.Header h1 {
+font: normal bold 40px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #ffffff;
+text-shadow: 0 0 -1px #000000;
+}
+.Header h1 a {
+color: #ffffff;
+}
+.Header .description {
+font: normal normal 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #ffffff;
+}
+.header-inner .Header .titlewrapper,
+.header-inner .Header .descriptionwrapper {
+padding-left: 0;
+padding-right: 0;
+margin-bottom: 0;
+}
+.header-inner .Header .titlewrapper {
+padding-top: 22px;
+}
+/* Tabs
+----------------------------------------------- */
+.tabs-outer {
+overflow: hidden;
+position: relative;
+background: #000000 none repeat scroll 0 0;
+}
+#layout .tabs-outer {
+overflow: visible;
+}
+.tabs-cap-top, .tabs-cap-bottom {
+position: absolute;
+width: 100%;
+border-top: 1px solid #222222;
+}
+.tabs-cap-bottom {
+bottom: 0;
+}
+.tabs-inner .widget li a {
+display: inline-block;
+margin: 0;
+padding: .6em 1.5em;
+font: normal bold 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #ffffff;
+border-top: 1px solid #222222;
+border-bottom: 1px solid #222222;
+border-left: 1px solid #222222;
+height: 16px;
+line-height: 16px;
+}
+.tabs-inner .widget li:last-child a {
+border-right: 1px solid #222222;
+}
+.tabs-inner .widget li.selected a, .tabs-inner .widget li a:hover {
+background: #000000 none repeat-x scroll 0 -100px;
+color: #ffffff;
+}
+/* Headings
+----------------------------------------------- */
+h2 {
+font: normal bold 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #ffffff;
+}
+/* Widgets
+----------------------------------------------- */
+.main-inner .section {
+margin: 0 27px;
+padding: 0;
+}
+.main-inner .column-left-outer,
+.main-inner .column-right-outer {
+margin-top: 0;
+}
+#layout .main-inner .column-left-outer,
+#layout .main-inner .column-right-outer {
+margin-top: 0;
+}
+.main-inner .column-left-inner,
+.main-inner .column-right-inner {
+background: transparent none repeat 0 0;
+-moz-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-webkit-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-goog-ms-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-moz-border-radius: 0;
+-webkit-border-radius: 0;
+-goog-ms-border-radius: 0;
+border-radius: 0;
+}
+#layout .main-inner .column-left-inner,
+#layout .main-inner .column-right-inner {
+margin-top: 0;
+}
+.sidebar .widget {
+font: normal normal 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #ffffff;
+}
+.sidebar .widget a:link {
+color: #888888;
+}
+.sidebar .widget a:visited {
+color: #444444;
+}
+.sidebar .widget a:hover {
+color: #cccccc;
+}
+.sidebar .widget h2 {
+text-shadow: 0 0 -1px #000000;
+}
+.main-inner .widget {
+background-color: #000000;
+border: 1px solid #000000;
+padding: 0 15px 15px;
+margin: 20px -16px;
+-moz-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-webkit-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-goog-ms-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-moz-border-radius: 0;
+-webkit-border-radius: 0;
+-goog-ms-border-radius: 0;
+border-radius: 0;
+}
+.main-inner .widget h2 {
+margin: 0 -15px;
+padding: .6em 15px .5em;
+border-bottom: 1px solid #000000;
+}
+.footer-inner .widget h2 {
+padding: 0 0 .4em;
+border-bottom: 1px solid #000000;
+}
+.main-inner .widget h2 + div, .footer-inner .widget h2 + div {
+border-top: 1px solid #000000;
+padding-top: 8px;
+}
+.main-inner .widget .widget-content {
+margin: 0 -15px;
+padding: 7px 15px 0;
+}
+.main-inner .widget ul, .main-inner .widget #ArchiveList ul.flat {
+margin: -8px -15px 0;
+padding: 0;
+list-style: none;
+}
+.main-inner .widget #ArchiveList {
+margin: -8px 0 0;
+}
+.main-inner .widget ul li, .main-inner .widget #ArchiveList ul.flat li {
+padding: .5em 15px;
+text-indent: 0;
+color: #000000;
+border-top: 1px solid #000000;
+border-bottom: 1px solid #000000;
+}
+.main-inner .widget #ArchiveList ul li {
+padding-top: .25em;
+padding-bottom: .25em;
+}
+.main-inner .widget ul li:first-child, .main-inner .widget #ArchiveList ul.flat li:first-child {
+border-top: none;
+}
+.main-inner .widget ul li:last-child, .main-inner .widget #ArchiveList ul.flat li:last-child {
+border-bottom: none;
+}
+.post-body {
+position: relative;
+}
+.main-inner .widget .post-body ul {
+padding: 0 2.5em;
+margin: .5em 0;
+list-style: disc;
+}
+.main-inner .widget .post-body ul li {
+padding: 0.25em 0;
+margin-bottom: .25em;
+color: #ffffff;
+border: none;
+}
+.footer-inner .widget ul {
+padding: 0;
+list-style: none;
+}
+.widget .zippy {
+color: #000000;
+}
+/* Posts
+----------------------------------------------- */
+body .main-inner .Blog {
+padding: 0;
+margin-bottom: 1em;
+background-color: transparent;
+border: none;
+-moz-box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+-webkit-box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+-goog-ms-box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+.main-inner .section:last-child .Blog:last-child {
+padding: 0;
+margin-bottom: 1em;
+}
+.main-inner .widget h2.date-header {
+margin: 0 -15px 1px;
+padding: 0 0 0 0;
+font: normal normal 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #46bdbd;
+background: transparent none no-repeat scroll top left;
+border-top: 0 solid #222222;
+border-bottom: 1px solid #000000;
+-moz-border-radius-topleft: 0;
+-moz-border-radius-topright: 0;
+-webkit-border-top-left-radius: 0;
+-webkit-border-top-right-radius: 0;
+border-top-left-radius: 0;
+border-top-right-radius: 0;
+position: static;
+bottom: 100%;
+right: 15px;
+text-shadow: 0 0 -1px #000000;
+}
+.main-inner .widget h2.date-header span {
+font: normal normal 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+display: block;
+padding: .5em 15px;
+border-left: 0 solid #222222;
+border-right: 0 solid #222222;
+}
+.date-outer {
+position: relative;
+margin: 30px 0 20px;
+padding: 0 15px;
+background-color: #141414;
+border: 1px solid #222222;
+-moz-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-webkit-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-goog-ms-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-moz-border-radius: 0;
+-webkit-border-radius: 0;
+-goog-ms-border-radius: 0;
+border-radius: 0;
+}
+.date-outer:first-child {
+margin-top: 0;
+}
+.date-outer:last-child {
+margin-bottom: 20px;
+-moz-border-radius-bottomleft: 0;
+-moz-border-radius-bottomright: 0;
+-webkit-border-bottom-left-radius: 0;
+-webkit-border-bottom-right-radius: 0;
+-goog-ms-border-bottom-left-radius: 0;
+-goog-ms-border-bottom-right-radius: 0;
+border-bottom-left-radius: 0;
+border-bottom-right-radius: 0;
+}
+.date-posts {
+margin: 0 -15px;
+padding: 0 15px;
+clear: both;
+}
+.post-outer, .inline-ad {
+border-top: 1px solid #222222;
+margin: 0 -15px;
+padding: 15px 15px;
+}
+.post-outer {
+padding-bottom: 10px;
+}
+.post-outer:first-child {
+padding-top: 0;
+border-top: none;
+}
+.post-outer:last-child, .inline-ad:last-child {
+border-bottom: none;
+}
+.post-body {
+position: relative;
+}
+.post-body img {
+padding: 8px;
+background: #000000;
+border: 1px solid transparent;
+-moz-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-webkit-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-moz-border-radius: 0;
+-webkit-border-radius: 0;
+border-radius: 0;
+}
+h3.post-title, h4 {
+font: normal bold 22px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #ffffff;
+}
+h3.post-title a {
+font: normal bold 22px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #ffffff;
+}
+h3.post-title a:hover {
+color: #46bdbd;
+text-decoration: underline;
+}
+.post-header {
+margin: 0 0 1em;
+}
+.post-body {
+line-height: 1.4;
+}
+.post-outer h2 {
+color: #ffffff;
+}
+.post-footer {
+margin: 1.5em 0 0;
+}
+#blog-pager {
+padding: 15px;
+font-size: 120%;
+background-color: #141414;
+border: 1px solid #000000;
+-moz-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-webkit-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-goog-ms-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-moz-border-radius: 0;
+-webkit-border-radius: 0;
+-goog-ms-border-radius: 0;
+border-radius: 0;
+-moz-border-radius-topleft: 0;
+-moz-border-radius-topright: 0;
+-webkit-border-top-left-radius: 0;
+-webkit-border-top-right-radius: 0;
+-goog-ms-border-top-left-radius: 0;
+-goog-ms-border-top-right-radius: 0;
+border-top-left-radius: 0;
+border-top-right-radius-topright: 0;
+margin-top: 1em;
+}
+.blog-feeds, .post-feeds {
+margin: 1em 0;
+text-align: center;
+color: #ffffff;
+}
+.blog-feeds a, .post-feeds a {
+color: #888888;
+}
+.blog-feeds a:visited, .post-feeds a:visited {
+color: #444444;
+}
+.blog-feeds a:hover, .post-feeds a:hover {
+color: #cccccc;
+}
+.post-outer .comments {
+margin-top: 2em;
+}
+/* Comments
+----------------------------------------------- */
+.comments .comments-content .icon.blog-author {
+background-repeat: no-repeat;
+background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEgAACxIB0t1+/AAAAAd0SU1FB9sLFwMeCjjhcOMAAAD+SURBVDjLtZSvTgNBEIe/WRRnm3U8RC1neQdsm1zSBIU9VVF1FkUguQQsD9ITmD7ECZIJSE4OZo9stoVjC/zc7ky+zH9hXwVwDpTAWWLrgS3QAe8AZgaAJI5zYAmc8r0G4AHYHQKVwII8PZrZFsBFkeRCABYiMh9BRUhnSkPTNCtVXYXURi1FpBDgArj8QU1eVXUzfnjv7yP7kwu1mYrkWlU33vs1QNu2qU8pwN0UpKoqokjWwCztrMuBhEhmh8bD5UDqur75asbcX0BGUB9/HAMB+r32hznJgXy2v0sGLBcyAJ1EK3LFcbo1s91JeLwAbwGYu7TP/3ZGfnXYPgAVNngtqatUNgAAAABJRU5ErkJggg==);
+}
+.comments .comments-content .loadmore a {
+border-top: 1px solid #222222;
+border-bottom: 1px solid #222222;
+}
+.comments .continue {
+border-top: 2px solid #222222;
+}
+/* Footer
+----------------------------------------------- */
+.footer-outer {
+margin: -0 0 -1px;
+padding: 0 0 0;
+color: #ffffff;
+overflow: hidden;
+}
+.footer-fauxborder-left {
+border-top: 1px solid #000000;
+background: #141414 none repeat scroll 0 0;
+-moz-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-webkit-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-goog-ms-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+margin: 0 -0;
+}
+/* Mobile
+----------------------------------------------- */
+body.mobile {
+background-size: auto;
+}
+.mobile .body-fauxcolumn-outer {
+background: transparent none repeat scroll top left;
+}
+*+html body.mobile .main-inner .column-center-inner {
+margin-top: 0;
+}
+.mobile .main-inner .widget {
+padding: 0 0 15px;
+}
+.mobile .main-inner .widget h2 + div,
+.mobile .footer-inner .widget h2 + div {
+border-top: none;
+padding-top: 0;
+}
+.mobile .footer-inner .widget h2 {
+padding: 0.5em 0;
+border-bottom: none;
+}
+.mobile .main-inner .widget .widget-content {
+margin: 0;
+padding: 7px 0 0;
+}
+.mobile .main-inner .widget ul,
+.mobile .main-inner .widget #ArchiveList ul.flat {
+margin: 0 -15px 0;
+}
+.mobile .main-inner .widget h2.date-header {
+right: 0;
+}
+.mobile .date-header span {
+padding: 0.4em 0;
+}
+.mobile .date-outer:first-child {
+margin-bottom: 0;
+border: 1px solid #222222;
+-moz-border-radius-topleft: 0;
+-moz-border-radius-topright: 0;
+-webkit-border-top-left-radius: 0;
+-webkit-border-top-right-radius: 0;
+-goog-ms-border-top-left-radius: 0;
+-goog-ms-border-top-right-radius: 0;
+border-top-left-radius: 0;
+border-top-right-radius: 0;
+}
+.mobile .date-outer {
+border-color: #222222;
+border-width: 0 1px 1px;
+}
+.mobile .date-outer:last-child {
+margin-bottom: 0;
+}
+.mobile .main-inner {
+padding: 0;
+}
+.mobile .header-inner .section {
+margin: 0;
+}
+.mobile .post-outer, .mobile .inline-ad {
+padding: 5px 0;
+}
+.mobile .tabs-inner .section {
+margin: 0 10px;
+}
+.mobile .main-inner .widget h2 {
+margin: 0;
+padding: 0;
+}
+.mobile .main-inner .widget h2.date-header span {
+padding: 0;
+}
+.mobile .main-inner .widget .widget-content {
+margin: 0;
+padding: 7px 0 0;
+}
+.mobile #blog-pager {
+border: 1px solid transparent;
+background: #141414 none repeat scroll 0 0;
+}
+.mobile .main-inner .column-left-inner,
+.mobile .main-inner .column-right-inner {
+background: transparent none repeat 0 0;
+-moz-box-shadow: none;
+-webkit-box-shadow: none;
+-goog-ms-box-shadow: none;
+box-shadow: none;
+}
+.mobile .date-posts {
+margin: 0;
+padding: 0;
+}
+.mobile .footer-fauxborder-left {
+margin: 0;
+border-top: inherit;
+}
+.mobile .main-inner .section:last-child .Blog:last-child {
+margin-bottom: 0;
+}
+.mobile-index-contents {
+color: #ffffff;
+}
+.mobile .mobile-link-button {
+background: #46bdbd none repeat scroll 0 0;
+}
+.mobile-link-button a:link, .mobile-link-button a:visited {
+color: #ffffff;
+}
+.mobile .tabs-inner .PageList .widget-content {
+background: transparent;
+border-top: 1px solid;
+border-color: #222222;
+color: #ffffff;
+}
+.mobile .tabs-inner .PageList .widget-content .pagelist-arrow {
+border-left: 1px solid #222222;
+}
+
+--></style>
+<style id="template-skin-1" type="text/css"><!--
+body {
+min-width: 1230px;
+}
+.content-outer, .content-fauxcolumn-outer, .region-inner {
+min-width: 1230px;
+max-width: 1230px;
+_width: 1230px;
+}
+.main-inner .columns {
+padding-left: 0px;
+padding-right: 260px;
+}
+.main-inner .fauxcolumn-center-outer {
+left: 0px;
+right: 260px;
+/* IE6 does not respect left and right together */
+_width: expression(this.parentNode.offsetWidth -
+parseInt("0px") -
+parseInt("260px") + 'px');
+}
+.main-inner .fauxcolumn-left-outer {
+width: 0px;
+}
+.main-inner .fauxcolumn-right-outer {
+width: 260px;
+}
+.main-inner .column-left-outer {
+width: 0px;
+right: 100%;
+margin-left: -0px;
+}
+.main-inner .column-right-outer {
+width: 260px;
+margin-right: -260px;
+}
+#layout {
+min-width: 0;
+}
+#layout .content-outer {
+min-width: 0;
+width: 800px;
+}
+#layout .region-inner {
+min-width: 0;
+width: auto;
+}
+body#layout div.add_widget {
+padding: 8px;
+}
+body#layout div.add_widget a {
+margin-left: 32px;
+}
+--></style>
+<style>
+    body {background-image:url(\/\/themes.googleusercontent.com\/image?id=1i_daHMzkzBNcV-v7uOhVYquMt20FCMbbTFxcHAARidZ6PYKs5-KeUa4Gm0erJ5vHVpot);}
+    
+@media (max-width: 200px) { body {background-image:url(\/\/themes.googleusercontent.com\/image?id=1i_daHMzkzBNcV-v7uOhVYquMt20FCMbbTFxcHAARidZ6PYKs5-KeUa4Gm0erJ5vHVpot&options=w200);}}
+@media (max-width: 400px) and (min-width: 201px) { body {background-image:url(\/\/themes.googleusercontent.com\/image?id=1i_daHMzkzBNcV-v7uOhVYquMt20FCMbbTFxcHAARidZ6PYKs5-KeUa4Gm0erJ5vHVpot&options=w400);}}
+@media (max-width: 800px) and (min-width: 401px) { body {background-image:url(\/\/themes.googleusercontent.com\/image?id=1i_daHMzkzBNcV-v7uOhVYquMt20FCMbbTFxcHAARidZ6PYKs5-KeUa4Gm0erJ5vHVpot&options=w800);}}
+@media (max-width: 1200px) and (min-width: 801px) { body {background-image:url(\/\/themes.googleusercontent.com\/image?id=1i_daHMzkzBNcV-v7uOhVYquMt20FCMbbTFxcHAARidZ6PYKs5-KeUa4Gm0erJ5vHVpot&options=w1200);}}
+/* Last tag covers anything over one higher than the previous max-size cap. */
+@media (min-width: 1201px) { body {background-image:url(\/\/themes.googleusercontent.com\/image?id=1i_daHMzkzBNcV-v7uOhVYquMt20FCMbbTFxcHAARidZ6PYKs5-KeUa4Gm0erJ5vHVpot&options=w1600);}}
+  </style>
+<script src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/cb=gapi.loaded_2" async=""></script><script src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/cb=gapi.loaded_1" async=""></script><script src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/cb=gapi.loaded_0" async=""></script><script type="text/javascript">function a(){var b=window.location.href,c=b.split("?");switch(c.length){case 1:return b+"?m=1";case 2:return 0<=c[1].search("(^|&)m=")?null:b+"&m=1";default:return null}}var d=navigator.userAgent;if(-1!=d.indexOf("Mobile")&&-1!=d.indexOf("WebKit")&&-1==d.indexOf("iPad")||-1!=d.indexOf("Opera Mini")||-1!=d.indexOf("IEMobile")){var e=a();e&&window.location.replace(e)};
+</script></head>
+<body class=" variant-dark">
+<div class="navbar no-items section" id="navbar" name="Navbar">
+</div>
+<div class="body-fauxcolumns">
+<div class="fauxcolumn-outer body-fauxcolumn-outer">
+<div class="cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left">
+<div class="fauxborder-right"></div>
+<div class="fauxcolumn-inner">
+</div>
+</div>
+<div class="cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+</div>
+<div class="content">
+<div class="content-fauxcolumns">
+<div class="fauxcolumn-outer content-fauxcolumn-outer">
+<div class="cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left">
+<div class="fauxborder-right"></div>
+<div class="fauxcolumn-inner">
+</div>
+</div>
+<div class="cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+</div>
+<div class="content-outer">
+<div class="content-cap-top cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left content-fauxborder-left">
+<div class="fauxborder-right content-fauxborder-right"></div>
+<div class="content-inner">
+<header>
+<div class="header-outer">
+<div class="header-cap-top cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left header-fauxborder-left">
+<div class="fauxborder-right header-fauxborder-right"></div>
+<div class="region-inner header-inner">
+<div class="header section" id="header" name="Header"><div class="widget Header" data-version="1" id="Header1">
+<div id="header-inner">
+<div class="titlewrapper">
+<h1 class="title">
+<a href="http://yveaux.blogspot.com/">Embedded Innovation</a>
+</h1>
+</div>
+<div class="descriptionwrapper">
+<p class="description"><span>
+</span></p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+<div class="header-cap-bottom cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+</header>
+<div class="tabs-outer">
+<div class="tabs-cap-top cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left tabs-fauxborder-left">
+<div class="fauxborder-right tabs-fauxborder-right"></div>
+<div class="region-inner tabs-inner">
+<div class="tabs no-items section" id="crosscol" name="Cross-Column"></div>
+<div class="tabs no-items section" id="crosscol-overflow" name="Cross-Column 2"></div>
+</div>
+</div>
+<div class="tabs-cap-bottom cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+<div class="main-outer">
+<div class="main-cap-top cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left main-fauxborder-left">
+<div class="fauxborder-right main-fauxborder-right"></div>
+<div class="region-inner main-inner">
+<div class="columns fauxcolumns">
+<div class="fauxcolumn-outer fauxcolumn-center-outer">
+<div class="cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left">
+<div class="fauxborder-right"></div>
+<div class="fauxcolumn-inner">
+</div>
+</div>
+<div class="cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+<div class="fauxcolumn-outer fauxcolumn-left-outer">
+<div class="cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left">
+<div class="fauxborder-right"></div>
+<div class="fauxcolumn-inner">
+</div>
+</div>
+<div class="cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+<div class="fauxcolumn-outer fauxcolumn-right-outer">
+<div class="cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left">
+<div class="fauxborder-right"></div>
+<div class="fauxcolumn-inner">
+</div>
+</div>
+<div class="cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+<!-- corrects IE6 width calculation -->
+<div class="columns-inner">
+<div class="column-center-outer">
+<div class="column-center-inner">
+<div class="main section" id="main" name="Main"><div class="widget Blog" data-version="1" id="Blog1">
+<div class="blog-posts hfeed">
+
+          <div class="date-outer">
+        
+<h2 class="date-header"><span>Sunday, July 27, 2014</span></h2>
+
+          <div class="date-posts">
+        
+<div class="post-outer">
+<div class="post hentry uncustomized-post-template" itemprop="blogPost" itemscope="itemscope" itemtype="http://schema.org/BlogPosting">
+<meta content="http://1.bp.blogspot.com/-dp_UoaD5OAs/U9P_W3dq-QI/AAAAAAAAAF0/jaaJh634KhI/s1600/nRF24L01.png" itemprop="image_url">
+<meta content="1578010460921274916" itemprop="blogId">
+<meta content="6853369581807800535" itemprop="postId">
+<a name="6853369581807800535"></a>
+<h3 class="post-title entry-title" itemprop="name">
+nRF24L01+ sniffer - part 2
+</h3>
+<div class="post-header">
+<div class="post-header-line-1"></div>
+</div>
+<div class="post-body entry-content" id="post-body-6853369581807800535" itemprop="description articleBody">
+<h3>
+<span style="font-family: Trebuchet MS, sans-serif;">Hardware</span></h3>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">The requirement to use cheap commodity hardware resulted in the use of a standard <a href="http://arduino.cc/en/Main/ArduinoBoardUno" target="_blank">Arduino Uno R3</a>&nbsp;and a single <a href="http://www.ebay.com/itm/Arduino-NRF24L01-2-4GHz-Antenna-Wireless-Transceiver-Module-Microcontroll-/310670158878?pt=LH_DefaultDomain_0&amp;hash=item4855626c1e" target="_blank">nRF24L01+ module</a>. Some male-female Dupont cables connect the radio to the Arduino. Other Arduino's based on AtMega328 should also work, as long as they have a serial interface to the PC and 3.3V power supply for the radio (the nRF24 I/O pins are 5V tolerant).</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">Be careful as multiple variants exist of the nRF24L01+ modules, and they don't all use the same layout for the pin header!</span></div>
+<div>
+<br>
+<span style="font-family: Trebuchet MS, sans-serif;"></span>
+<span style="font-family: Trebuchet MS, sans-serif;">Connect the two as follows:</span><br>
+<table cellpadding="0" cellspacing="0" class="tr-caption-container" style="float: right; text-align: right;"><tbody>
+<tr><td style="text-align: center;"><a href="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/nRF24L01.png" imageanchor="1" style="clear: right; margin-bottom: 1em; margin-left: auto; margin-right: auto;"><img border="0" height="106" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/nRF24L01.png" width="200"></a></td></tr>
+<tr><td class="tr-caption" style="text-align: center;"><span style="font-family: Trebuchet MS, sans-serif;">nRF24L01+ module pinout</span></td></tr>
+</tbody></table>
+<span style="font-family: Trebuchet MS, sans-serif;"></span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"></span>
+
+<br>
+<table style="table-layout: fixed; width: 305px;"><colgroup><col style="width: 87px;"><col style="width: 79px;"><col style="width: 26px;"><col style="width: 113px;"></colgroup><tbody>
+<tr><th><span style="font-family: Trebuchet MS, sans-serif;">Function</span></th><th><span style="font-family: Trebuchet MS, sans-serif;">Arduino Uno&nbsp;pin</span></th><th></th><th><span style="font-family: Trebuchet MS, sans-serif;">nRF24L01+</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">pin</span></th></tr>
+<tr><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">GND</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">GND</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">-</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">1</span></div>
+</td></tr>
+<tr><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">3.3V</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">3.3V</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">-</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">2</span></div>
+</td></tr>
+<tr><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">CE</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">9</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">-</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">3</span></div>
+</td></tr>
+<tr><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">CSN/CS</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">10</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">-</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">4</span></div>
+</td></tr>
+<tr><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">SCK</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">13</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">-</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">5</span></div>
+</td></tr>
+<tr><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">MOSI</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">11</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">-</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">6</span></div>
+</td></tr>
+<tr><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">MISO</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">12</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">-</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">7</span></div>
+</td></tr>
+<tr><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">IRQ</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">2</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">-</span></div>
+</td><td><div style="text-align: center;">
+<span style="font-family: Trebuchet MS, sans-serif;">8</span></div>
+</td></tr>
+</tbody></table>
+<span style="font-family: Trebuchet MS, sans-serif;"></span></div>
+<div>
+<div style="text-align: center;">
+<div style="text-align: left;">
+<span style="font-family: Trebuchet MS, sans-serif;"></span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"></span></div>
+</div>
+</div>
+<div>
+<div style="text-align: left;">
+<span style="font-family: Trebuchet MS, sans-serif;">Some applications don't connect the IRQ line, but the sniffer requires it to quickly respond to received packets.</span></div>
+<div style="text-align: left;">
+<span style="font-family: Trebuchet MS, sans-serif;">This is what my sniffer looks like:</span></div>
+<div style="text-align: left;">
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody>
+<tr><td style="text-align: center;"><a href="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/2014-07-26+21.25.40.jpg" imageanchor="1" style="margin-left: auto; margin-right: auto;"><img border="0" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/2014-07-26+21.25.40.jpg"></a></td></tr>
+<tr><td class="tr-caption" style="text-align: center;"><span style="font-family: Trebuchet MS, sans-serif;">nRF24 sniffer hardware: Arduino Uno, prototype shield, some Dupont cables and nRF24L01+ module</span></td></tr>
+</tbody></table>
+<div style="text-align: left;">
+<span style="font-family: Trebuchet MS, sans-serif;">I didn't have any male-female Dupont cables at hand, so I put a prototype shield inbetween to turn the female headers into male.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<br>
+<h3>
+<span style="font-family: Trebuchet MS, sans-serif;">Software</span></h3>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">The required software is split in the following parts:</span></div>
+<div>
+<ul>
+<li><span style="font-family: Trebuchet MS, sans-serif;">Sketch running on the Arduino: configures the nRF24 radio and reads any messages received using SPI. It determines the actual payload size for each message and adds a microsecond-resolution timestamp. The messages are buffered in the Atmega328 and sent to the host over a serial connection. It keeps track of the number of lost messages, when the buffer is full.</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">Console application 'Nrf24Sniff.exe' (currently only Windows) which sends configuration data to the Arduino sketch and reads captured packets from the sketch, using a serial connection. The packets received are forwarded in <a href="http://wiki.wireshark.org/Development/LibpcapFileFormat" target="_blank">libpcap-format</a>&nbsp;to a named pipe. Wireshark will be instructed to capture from this named pipe (too bad it cannot capture directly from a serial connection).</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;"><a href="http://www.wireshark.org/" target="_blank">Wireshark</a>&nbsp;to visualize the captured packets, filter them and gather statistics.</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">Wireshark will be extended with one or more plugins (called <i>dissectors, </i>currently only precompiled for Windows) which recognize the nRF24 packet format and take it apart. Protocols which use the nRF24 as transport layer (e.g. MySensors) require a separate dissector.</span></li>
+</ul>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<h3>
+<span style="font-family: Trebuchet MS, sans-serif;">Installation</span></h3>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">As you can see in the description above, the console application and Wireshark dissectors are currently only available for Windows (anyone who volunteers to port them to Linux and/or Mac, please do so and let me know).</span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">In the description below I assume you've already downloaded and installed:</span></div>
+<div>
+<ul>
+<li><span style="font-family: Trebuchet MS, sans-serif;"><a href="http://www.wireshark.org/download.html" target="_blank">Wireshark</a>&nbsp;- I used 1.10.8, either 32- or 64-bits</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;"><a href="http://arduino.cc/en/Main/Software" target="_blank">Arduino IDE</a>&nbsp;- I used 1.5.6-r2, but I guess any 1.5.x version will do</span></li>
+</ul>
+</div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">First download and extract the software I developed&nbsp;as a <a href="https://github.com/Yveaux/NRF24_Sniffer/archive/master.zip" target="_blank">single zip-file</a>&nbsp;from my <a href="https://github.com/Yveaux" target="_blank">GitHub repository</a>.</span></div>
+<span style="font-family: Trebuchet MS, sans-serif;"><i><br></i></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><i>Arduino sniffer sketch</i></span><br>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">Either move the contents from the 'Arduino' directory to your Arduino users' directory (c:\users\&lt;yourname&gt;\Documents\Arduino) or copy it elsewhere and instruct the Arduino IDE to use that directory by pointing Preferences -&gt; Sketchbook location to it and restart. I'm a bit reluctant when it comes to copying libraries to your regular users' Arduino directory as it might conflict with any libraries already present. Beware that I changed some small thinks in the RF24 library that's included.</span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">Start the Arduino IDE, load the NRF24_sniff sketch, connect the hardware setup as described above, select the correct board &amp; comport and download the compiled sketch.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div>
+</div>
+<div>
+<i><span style="font-family: Trebuchet MS, sans-serif;">Nrf24Sniff.exe</span></i></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">The Windows console application which transfers captured data from a serial interface to a named pipe can be found in the 'SerialToPipe/bin/Win32' directory. Just copy this executable somewhere convenient.</span></div>
+<div>
+<br></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><i>Wireshark dissector(s)</i></span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">Choose the directory matching your 32- or 64-bits install from 'Wireshark/bin/Win32' or&nbsp;</span><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">'Wireshark/bin/Win64' and copy the nrf24.dll to the Wireshark plugins directory, e.g. '</span><span style="font-family: Trebuchet MS, sans-serif;">c:\Program Files\Wireshark\plugins\1.10.8\</span><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">'.</span></div>
+<div>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">Those using the MySensors library can also copy either mysensors1.dll (version 1.3 of the library) or mysensors2.dll (version 1.4beta), depending on the library version you're working with. Better not copy both of them as these are <i><a href="https://code.wireshark.org/review/gitweb?p=wireshark.git;a=blob_plain;f=doc/README.heuristic" target="_blank">heuristic</a></i>&nbsp;dissectors which have problems detecting the protocol version reliably.</span></div>
+<div>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;"><br></span></div>
+<h3>
+<span style="font-family: Trebuchet MS, sans-serif;">Running</span></h3>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">Connect the hardware running the sniffer sketch to your PC (either using an RS232 connection or a serial-to-USB bridge as present on the Arduino Uno). Note the comport assigned by Windows (the same port as in the Arduino IDE). Assure the Arduino IDE's Serial Monitor is not running as it will block access to the serial port.</span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><b>Nrf24sniff.exe</b>&nbsp;can be started from a cmd-window. It supports a number of commandline parameters which control its behaviour (display them using '</span><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">Nrf24Sniff.exe -h')</span><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">:</span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/nrf24sniff-h.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/nrf24sniff-h.png"></a></div>
+<div>
+<br></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">For example, when monitoring MySensors 1.4beta traffic (at non-default 1Mb/s), using the Arduino Uno sniffer connected to com17, I run the tool as follows:</span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div>
+<span style="font-family: Courier New, Courier, monospace;">Nrf24Sniff.exe -P17 -c76 -r0 -l5 -p4 -a0xA8A8E1FC00 -C2</span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">The address length is set to 5 bytes (-l5), of which 4 bytes are used as base address (-p4) (Please refer to <a href="http://yveaux.blogspot.nl/2014/07/nrf24l01-sniffer-part-1.html" target="_blank">part 1</a> of this series for a description of addressing schemes). Passing only the comport would have been sufficient in this case, as the rest of the parameters are all set to defaults.</span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">Now run it:</span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/nrf24sniff-connpipe.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/nrf24sniff-connpipe.png"></a></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">Keep it running and open another console window to start Wireshark:</span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/nrf24sniff-startws.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/nrf24sniff-startws.png"></a></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">This instructs Wireshark to start capturing from interface (-i) \\.\pipe\wireshark (that's the named pipe Nrf24Sniff.exe will be writing to) and to start capturing immediately (-k). More commandline options for Wireshark can be found <a href="http://www.wireshark.org/docs/man-pages/wireshark.html" target="_blank">here</a>.</span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">After Wireshark starts capturing, the Nrf24Sniff console window will display a 'Wait for sniffer to restart' message for a few seconds (at most):</span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/nrf24sniff-config.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/nrf24sniff-config.png"></a></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">If it hangs here, restart the sniffer hardware manually by pressing the reset button on the Arduino (I'm working on that...).</span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">As Wireshark has no clue how to interpret the data coming through our named pipe, we have to tell it which dissector to use.</span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">Switch over to Wireshark and select Edit -&gt; Preferences.</span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">In the preferences window, open the <i>protocols</i> tree, scroll down and select&nbsp;<i>DLT_USER</i>.</span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">Press the edit button for the 'Encapsulations table' and press <i>New. </i>Enter the data as in the screenshot below:</span><br>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/WS-dlt_user.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/WS-dlt_user.png"></a></div>
+</div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">Press OK, OK, OK. Any packets on air that match the radio configuration should now be captured in Wireshark!</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://3.bp.blogspot.com/-4NEFCPkX5to/VWBBujOF1RI/AAAAAAAAAPk/BxcVpgwr8pE/s1600/ws.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" height="450" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/ws.png" width="640"></a></div>
+</div>
+<div class="" style="clear: both; text-align: center;">
+<br></div>
+<div>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">The Nrf24Sniff console shows a count of packets captured and lost:</span></div>
+<div>
+<br></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/Nrf24-cap.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/Nrf24-cap.png"></a></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<h3>
+<span style="font-family: Trebuchet MS, sans-serif;">What's next</span></h3>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">The next and last part of this series will dive into the possibilities of Wireshark and the dissectors I've implemented for nRF24 packets and the MySensors protocol.</span></div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span><span style="font-family: Trebuchet MS, sans-serif; font-size: x-small;"><i>Updates</i></span><br>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif; font-size: x-small;">Aug 3 - statically linked Nrf24sniff.exe, so dependency on msvcr110.dll no longer exists. Should also work on WinXP now.</span></div>
+</div>
+</div>
+<div style="clear: both;"></div>
+</div>
+<div class="post-footer">
+<div class="post-footer-line post-footer-line-1">
+<span class="post-author vcard">
+Posted by
+<span class="fn" itemprop="author" itemscope="itemscope" itemtype="http://schema.org/Person">
+<meta content="https://www.blogger.com/profile/16599434883652140617" itemprop="url">
+<a class="g-profile" href="https://www.blogger.com/profile/16599434883652140617" rel="author" title="author profile" data-gapiscan="true" data-onload="true" data-gapiattached="true">
+<span itemprop="name">Yveaux</span>
+</a>
+</span>
+</span>
+<span class="post-timestamp">
+at
+<meta content="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html" itemprop="url">
+<a class="timestamp-link" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html" rel="bookmark" title="permanent link"><abbr class="published" itemprop="datePublished" title="2014-07-27T16:49:00+02:00">4:49 PM</abbr></a>
+</span>
+<span class="reaction-buttons">
+</span>
+<span class="post-comment-link">
+</span>
+<span class="post-backlinks post-comment-link">
+</span>
+<span class="post-icons">
+<span class="item-control blog-admin pid-1602163402">
+<a href="https://www.blogger.com/post-edit.g?blogID=1578010460921274916&amp;postID=6853369581807800535&amp;from=pencil" title="Edit Post">
+<img alt="" class="icon-action" height="18" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/icon18_edit_allbkg.gif" width="18">
+</a>
+</span>
+</span>
+<div class="post-share-buttons goog-inline-block">
+<a class="goog-inline-block share-button sb-email" href="https://www.blogger.com/share-post.g?blogID=1578010460921274916&amp;postID=6853369581807800535&amp;target=email" target="_blank" title="Email This"><span class="share-button-link-text">Email This</span></a><a class="goog-inline-block share-button sb-blog" href="https://www.blogger.com/share-post.g?blogID=1578010460921274916&amp;postID=6853369581807800535&amp;target=blog" onclick="window.open(this.href, &quot;_blank&quot;, &quot;height=270,width=475&quot;); return false;" target="_blank" title="BlogThis!"><span class="share-button-link-text">BlogThis!</span></a><a class="goog-inline-block share-button sb-twitter" href="https://www.blogger.com/share-post.g?blogID=1578010460921274916&amp;postID=6853369581807800535&amp;target=twitter" target="_blank" title="Share to Twitter"><span class="share-button-link-text">Share to Twitter</span></a><a class="goog-inline-block share-button sb-facebook" href="https://www.blogger.com/share-post.g?blogID=1578010460921274916&amp;postID=6853369581807800535&amp;target=facebook" onclick="window.open(this.href, &quot;_blank&quot;, &quot;height=430,width=640&quot;); return false;" target="_blank" title="Share to Facebook"><span class="share-button-link-text">Share to Facebook</span></a><a class="goog-inline-block share-button sb-pinterest" href="https://www.blogger.com/share-post.g?blogID=1578010460921274916&amp;postID=6853369581807800535&amp;target=pinterest" target="_blank" title="Share to Pinterest"><span class="share-button-link-text">Share to Pinterest</span></a><div class="goog-inline-block google-plus-share-container"><div id="___plusone_0" style="text-indent: 0px; margin: 0px; padding: 0px; border-style: none; float: none; line-height: normal; font-size: 1px; vertical-align: baseline; display: inline-block; width: 300px; height: 20px; background: transparent;"><iframe ng-non-bindable="" frameborder="0" hspace="0" marginheight="0" marginwidth="0" scrolling="no" style="position: static; top: 0px; width: 300px; margin: 0px; border-style: none; left: 0px; visibility: visible; height: 20px;" tabindex="0" vspace="0" width="100%" id="I0_1487803256526" name="I0_1487803256526" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/fastbutton.html" data-gapiattached="true" title="+1"></iframe></div></div>
+</div>
+</div>
+<div class="post-footer-line post-footer-line-2">
+<span class="post-labels">
+</span>
+</div>
+<div class="post-footer-line post-footer-line-3">
+<span class="post-location">
+</span>
+</div>
+</div>
+</div>
+<div class="comments" id="comments">
+<a name="comments"></a>
+<h4>28 comments:</h4>
+<div class="comments-content">
+<script async="async" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/comments.js" type="text/javascript"></script>
+<script type="text/javascript">
+    (function() {
+      var items = [{'id': '3208417891989940502', 'body': 'When i upload the sniffer.ino , i get the error: circularbuffer.h is missed??\x3cbr /\x3ei use arduino 1.5.8', 'timestamp': '1418116794032', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1418116794032#c3208417891989940502', 'author': {'name': 'Anonymous', 'avatarUrl': '//img1.blogblog.com/img/blank.gif', 'profileUrl': ''}, 'displayTime': 'December 9, 2014 at 10:19 AM', 'deleteclass': 'item-control blog-admin pid-1801627485'}, {'id': '4596338569523112067', 'body': 'You need first to Import the libraries CircularBuffer and RF24', 'timestamp': '1425415540856', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1425415540856#c4596338569523112067', 'author': {'name': 'ariel', 'avatarUrl': '//img1.blogblog.com/img/blank.gif', 'profileUrl': ''}, 'displayTime': 'March 3, 2015 at 9:45 PM', 'deleteclass': 'item-control blog-admin pid-862275380'}, {'id': '4902283521565895480', 'body': 'I use wireshark 1.12.1 and receive and error \x3cbr /\x3e\x26quot;The procedure entry point tvb_length cold not be located in the dynamic library......\x26quot;\x3cbr /\x3eSome one cold help me?', 'timestamp': '1425415695976', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1425415695976#c4902283521565895480', 'author': {'name': 'ariel', 'avatarUrl': '//img1.blogblog.com/img/blank.gif', 'profileUrl': ''}, 'displayTime': 'March 3, 2015 at 9:48 PM', 'deleteclass': 'item-control blog-admin pid-862275380'}, {'id': '1032180344406470474', 'body': 'Hey Ariel,\x3cbr /\x3e\x3cbr /\x3eI developed using Wireshark 1.10.8. Probably the API has slightly changed since then.\x3cbr /\x3ePlease try with Wireshark 1.10.x.', 'timestamp': '1425493494385', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1425493494385#c1032180344406470474', 'author': {'name': 'Yveaux', 'avatarUrl': '//1.bp.blogspot.com/-7JcfWD-RTL8/U98uFA0PYdI/AAAAAAAAANA/av-JlIcdimc/s35/*', 'profileUrl': 'https://www.blogger.com/profile/16599434883652140617'}, 'displayTime': 'March 4, 2015 at 7:24 PM', 'deleteclass': 'item-control blog-admin pid-1602163402'}, {'id': '4747270800680103448', 'body': 'Is it possible to use this with an Arduino Mega 2560 or an Arduino Pro?', 'timestamp': '1426892291921', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1426892291921#c4747270800680103448', 'author': {'name': 'Donnie Jones', 'avatarUrl': '//lh3.googleusercontent.com/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA\x3ds35', 'profileUrl': 'https://www.blogger.com/profile/12154757892043906513'}, 'displayTime': 'March 20, 2015 at 11:58 PM', 'deleteclass': 'item-control blog-admin pid-1659131472'}, {'id': '6032774058469091564', 'parentId': '4747270800680103448', 'body': 'In principle it should work (maybe you have to change some pin assignments). I didn\x26#39;t test it, though. ', 'timestamp': '1427028338910', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1427028338910#c6032774058469091564', 'author': {'name': 'Yveaux', 'avatarUrl': '//1.bp.blogspot.com/-7JcfWD-RTL8/U98uFA0PYdI/AAAAAAAAANA/av-JlIcdimc/s35/*', 'profileUrl': 'https://www.blogger.com/profile/16599434883652140617'}, 'displayTime': 'March 22, 2015 at 1:45 PM', 'deleteclass': 'item-control blog-admin pid-1602163402'}, {'id': '3536871123888868255', 'body': 'Hi.. I experimented a bit with your code and found some things I\x26#39;d like to mention for others:\x3cbr /\x3e\x3cbr /\x3eThe code seems to be only able to capture Enhanced Shock Burst messages. I\x26#39;ve also experienced problems whithout enabling the dynamic payload length bit on the TX device. The mentioned limitation in part 3 (node addresses can only be 1 byte long), isn\x26#39;t present in the nrf24 dissector... It\x26#39;s only in the mysensors dissector.\x3cbr /\x3e\x3cbr /\x3eAnyways... Good work... I\x26#39;ll try to port the PC stuff to linux... If I succeed I\x26#39;ll contact you on github.', 'timestamp': '1433695333178', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1433695333178#c3536871123888868255', 'author': {'name': 'Didi1357', 'avatarUrl': '//img1.blogblog.com/img/blank.gif', 'profileUrl': 'https://malli.co.at'}, 'displayTime': 'June 7, 2015 at 6:42 PM', 'deleteclass': 'item-control blog-admin pid-1410569951'}, {'id': '3226207449729308027', 'parentId': '3536871123888868255', 'body': 'Hey Didi!\x3cbr /\x3e\x3cbr /\x3eThanks for the remarks! You\x26#39;re right about the node address: it used to be present, but I added a piece of configuration data (after writing this article) which is exchanged between the sniffer and the nrf24 dissector. I forgot to remove the limitation from this article ;-) \x3cbr /\x3eIt would be very nice if we could have a shared codebase for both Windows \x26amp; Linux. Keep me informed!\x3cbr /\x3e\x3cbr /\x3eCheerz,\x3cbr /\x3e\x3cbr /\x3eYveaux', 'timestamp': '1433702441518', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1433702441518#c3226207449729308027', 'author': {'name': 'Yveaux', 'avatarUrl': '//3.bp.blogspot.com/-6bVamohyx0M/VWBDTCyUsiI/AAAAAAAAAQU/NtSso3hU9rI/s35/eray.jpg', 'profileUrl': 'https://www.blogger.com/profile/16599434883652140617'}, 'displayTime': 'June 7, 2015 at 8:40 PM', 'deleteclass': 'item-control blog-admin pid-1602163402'}, {'id': '2444908803381165697', 'parentId': '3536871123888868255', 'body': 'Sure.. I\x26#39;m trying to change as little as possible... I will definitely not touch the Arduino Code for example, because I\x26#39;ve got no clue of that and it seems to be a solid working piece of code which doesn\x26#39;t really come with any limitations... (Am I right assuming that it would even be possible to capture normal messages (Non Enhanced Shockburst) with just a new nrf24 dissector?)\x3cbr /\x3e\x3cbr /\x3eThere are major differences in serial connection handling on windows and linux though...\x3cbr /\x3e\x3cbr /\x3eGreetings, Didi', 'timestamp': '1434207876615', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1434207876615#c2444908803381165697', 'author': {'name': 'Didi1357', 'avatarUrl': '//img1.blogblog.com/img/blank.gif', 'profileUrl': 'https://malli.co.at'}, 'displayTime': 'June 13, 2015 at 5:04 PM', 'deleteclass': 'item-control blog-admin pid-1869912876'}, {'id': '733581727954909639', 'parentId': '3536871123888868255', 'body': 'Edit:\x3cbr /\x3eHave you ever tried to receive Enhanced ShockBurst message with NoAck Bit set? I\x26#39;m not sure wheter I\x26#39;ve made a mistake in my TX code or not... I\x26#39;ll try to debug that anyways sooner or later, but it would be awesome if you could save me some time with that information. :)\x3cbr /\x3e\x3cbr /\x3eGreetings, Didi', 'timestamp': '1434208551940', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1434208551940#c733581727954909639', 'author': {'name': 'Didi1357', 'avatarUrl': '//img1.blogblog.com/img/blank.gif', 'profileUrl': 'https://malli.co.at'}, 'displayTime': 'June 13, 2015 at 5:15 PM', 'deleteclass': 'item-control blog-admin pid-1869912876'}, {'id': '1485470187685214479', 'body': 'Hi,\x3cbr /\x3e\x3cbr /\x3eI ported the Serial2Pipe Tool to linux and filed a pull request on Github.\x3cbr /\x3e\x3cbr /\x3eI was also able to answer my questions above on my own:\x3cbr /\x3eThe Arduino code is also assuming Enhanced Shockburst messages with a dynamic payload.\x3cbr /\x3eThe error seems to be in my TX code. So this project just works like expected.\x3cbr /\x3e\x3cbr /\x3eGreetings, Didi.', 'timestamp': '1438034820308', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1438034820308#c1485470187685214479', 'author': {'name': 'Didi1357', 'avatarUrl': '//img1.blogblog.com/img/blank.gif', 'profileUrl': 'https://malli.co.at'}, 'displayTime': 'July 28, 2015 at 12:07 AM', 'deleteclass': 'item-control blog-admin pid-1041143453'}, {'id': '8662647917342401638', 'body': 'why you no ESP8266?', 'timestamp': '1445620964514', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1445620964514#c8662647917342401638', 'author': {'name': 'wopot', 'avatarUrl': '//img1.blogblog.com/img/blank.gif', 'profileUrl': 'https://twitter.com/wopot'}, 'displayTime': 'October 23, 2015 at 7:22 PM', 'deleteclass': 'item-control blog-admin pid-960460870'}, {'id': '8125043321973592414', 'body': '\x3cspan class\x3d\x27deleted-comment\x27\x3eThis comment has been removed by the author.\x3c/span\x3e', 'timestamp': '1459023593097', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1459023593097#c8125043321973592414', 'author': {'name': '夢蝶園', 'avatarUrl': '//lh3.googleusercontent.com/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA\x3ds35', 'profileUrl': 'https://www.blogger.com/profile/08548199690581295559'}, 'displayTime': 'March 26, 2016 at 9:19 PM', 'deleteclass': 'item-control blog-admin '}, {'id': '5171130200301213199', 'body': 'Hello. I copied files to \x26quot;d:\\Program Files\\Wireshark\\plugins\\2.0.2\\nrf24.dll\x26quot; \x3cbr /\x3eBut I received an error. Please, see the picture\x3cbr /\x3e\x3cbr /\x3ehttps://www.dropbox.com/s/9domyxzd0u1u4ig/Problem.png?dl\x3d0', 'timestamp': '1460581779170', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1460581779170#c5171130200301213199', 'author': {'name': 'Anonymous', 'avatarUrl': '//img1.blogblog.com/img/blank.gif', 'profileUrl': ''}, 'displayTime': 'April 13, 2016 at 11:09 PM', 'deleteclass': 'item-control blog-admin pid-1899850286'}, {'id': '2268630251364018745', 'parentId': '5171130200301213199', 'body': 'Use Wireshark 1.10.8, as I did. Wireshark tends to change their plugin interface regularly and this is what you\x26#39;ve probably ran into.\x3cbr /\x3eYou can get it here: https://www.wireshark.org/download/win32/all-versions/\x3cbr /\x3e\x3cbr /\x3eGood luck!', 'timestamp': '1460790385224', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1460790385224#c2268630251364018745', 'author': {'name': 'Yveaux', 'avatarUrl': '//3.bp.blogspot.com/-6bVamohyx0M/VWBDTCyUsiI/AAAAAAAAAQU/NtSso3hU9rI/s35/eray.jpg', 'profileUrl': 'https://www.blogger.com/profile/16599434883652140617'}, 'displayTime': 'April 16, 2016 at 9:06 AM', 'deleteclass': 'item-control blog-admin pid-1602163402'}, {'id': '7133284410717801672', 'body': 'I set up everything as per your instructions, but Wireshark doesn\x26#39;t sniff any traffic. No errors, just captured 0 packets, lost 0 packets. When I unplug nRF24L01+ from Arduino during the sniffing process it shows me \x26quot;illegal serial packet size 9\x26quot;. Any ideas what I could possibly do wrong? I checked and doublechecked all the instructions everything 100 times. Thanks in advance.', 'timestamp': '1461267946621', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1461267946621#c7133284410717801672', 'author': {'name': 'Mikhail Oparin', 'avatarUrl': '//lh5.googleusercontent.com/-pFOlMPyWJO4/AAAAAAAAAAI/AAAAAAAALC4/lBsAW3Y0YZc/s35-c/photo.jpg', 'profileUrl': 'https://www.blogger.com/profile/09082877377346697367'}, 'displayTime': 'April 21, 2016 at 9:45 PM', 'deleteclass': 'item-control blog-admin pid-348852392'}, {'id': '1398546224354876735', 'parentId': '7133284410717801672', 'body': 'I`m getting the same problem. \x3cbr /\x3eany ideas how to solve this?', 'timestamp': '1463003378715', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1463003378715#c1398546224354876735', 'author': {'name': 'KT', 'avatarUrl': '//lh3.googleusercontent.com/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA\x3ds35', 'profileUrl': 'https://www.blogger.com/profile/16184669632726638674'}, 'displayTime': 'May 11, 2016 at 11:49 PM', 'deleteclass': 'item-control blog-admin pid-363925357'}, {'id': '5595484188936184812', 'parentId': '5171130200301213199', 'body': '\x3cspan class\x3d\x27deleted-comment\x27\x3eThis comment has been removed by the author.\x3c/span\x3e', 'timestamp': '1463506516250', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1463506516250#c5595484188936184812', 'author': {'name': 'Lyubomyr Demkiv', 'avatarUrl': '//lh3.googleusercontent.com/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA\x3ds35', 'profileUrl': 'https://www.blogger.com/profile/12401506577028079517'}, 'displayTime': 'May 17, 2016 at 7:35 PM', 'deleteclass': 'item-control blog-admin '}, {'id': '8274199369145198232', 'parentId': '5171130200301213199', 'body': 'Thank You very much for reply. It worked. I receive no errors, but I can\x26#39;t catch any packets.\x3cbr /\x3eI connected GateWay and a node with humidity sensor. Domotics is receiving data but I can\x26#39;t see it in the Wireshark. Can You, please, help me?\x3cbr /\x3eI\x26#39;m using Mysensors 1.5\x3cbr /\x3e\x3cbr /\x3eConnect Wireshark to \\\\.\\pipe\\wireshark to continue...\x3cbr /\x3eWait for sniffer to restart Ok\x3cbr /\x3e\x3cbr /\x3eChannel: 76\x3cbr /\x3eDatarate: 1Mb/s\x3cbr /\x3eAddress: 0xa8a8e1fc**\x3cbr /\x3eMax payload: 32\x3cbr /\x3eCRC length: 2\x3cbr /\x3eCaptured 0 packets, Lost 0 packets', 'timestamp': '1463506567933', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1463506567933#c8274199369145198232', 'author': {'name': 'Anonymous', 'avatarUrl': '//img1.blogblog.com/img/blank.gif', 'profileUrl': ''}, 'displayTime': 'May 17, 2016 at 7:36 PM', 'deleteclass': 'item-control blog-admin pid-459054700'}, {'id': '2091049812915158087', 'parentId': '5171130200301213199', 'body': 'Here is data from serial (I stopped Wireshark for this and commented binary_output )\x3cbr /\x3e\x3cbr /\x3e-- RF24 Sniff --\x3cbr /\x3e4e 4c00050400fce1a8a80000000220 Channel:     76\x3cbr /\x3eDatarate:    1Mb/s\x3cbr /\x3eAddress:     0xA8A8E1FC**\x3cbr /\x3eMax payload: 32\x3cbr /\x3eCRC length:  2\x3cbr /\x3e\x3cbr /\x3eSTATUS   \x3d 0x0e RX_DR\x3d0 TX_DS\x3d0 MAX_RT\x3d0 RX_P_NO\x3d7 TX_FULL\x3d0\x3cbr /\x3eRX_ADDR_P0-1 \x3d 0xa8a8e1fc 0xc2c2c2c2\x3cbr /\x3e\x3cbr /\x3e//Some other data\x3cbr /\x3e\x3cbr /\x3eListening...\x3cbr /\x3e \x3cbr /\x3eAnd this is all.\x3cbr /\x3eWhat am I doing wrong?', 'timestamp': '1463508418196', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1463508418196#c2091049812915158087', 'author': {'name': 'Anonymous', 'avatarUrl': '//img1.blogblog.com/img/blank.gif', 'profileUrl': ''}, 'displayTime': 'May 17, 2016 at 8:06 PM', 'deleteclass': 'item-control blog-admin pid-459054700'}, {'id': '8044065300709091016', 'parentId': '5171130200301213199', 'body': '\x3cspan class\x3d\x27deleted-comment\x27\x3eThis comment has been removed by the author.\x3c/span\x3e', 'timestamp': '1463509157379', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1463509157379#c8044065300709091016', 'author': {'name': 'Lyubomyr Demkiv', 'avatarUrl': '//lh3.googleusercontent.com/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA\x3ds35', 'profileUrl': 'https://www.blogger.com/profile/12401506577028079517'}, 'displayTime': 'May 17, 2016 at 8:19 PM', 'deleteclass': 'item-control blog-admin '}, {'id': '7620828913902499311', 'parentId': '5171130200301213199', 'body': 'I changed to -r2 and it works :)', 'timestamp': '1463509192750', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1463509192750#c7620828913902499311', 'author': {'name': 'Anonymous', 'avatarUrl': '//img1.blogblog.com/img/blank.gif', 'profileUrl': ''}, 'displayTime': 'May 17, 2016 at 8:19 PM', 'deleteclass': 'item-control blog-admin pid-459054700'}, {'id': '4699701251579599704', 'parentId': '5171130200301213199', 'body': 'Yup, -r2 sets datarate to 250KBit/s, which is default for MySensors.\x3cbr /\x3eGreat to hear you finally gor it working!\x3cbr /\x3eTo anybody else not capturing any packets: check-double-check the wireless parameters! Wrong configuration will cause you to capture nothing.', 'timestamp': '1463510076043', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1463510076043#c4699701251579599704', 'author': {'name': 'Yveaux', 'avatarUrl': '//3.bp.blogspot.com/-6bVamohyx0M/VWBDTCyUsiI/AAAAAAAAAQU/NtSso3hU9rI/s35/eray.jpg', 'profileUrl': 'https://www.blogger.com/profile/16599434883652140617'}, 'displayTime': 'May 17, 2016 at 8:34 PM', 'deleteclass': 'item-control blog-admin pid-1602163402'}, {'id': '5592178678552076208', 'body': '\x3cspan class\x3d\x27deleted-comment\x27\x3eThis comment has been removed by the author.\x3c/span\x3e', 'timestamp': '1464624558647', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1464624558647#c5592178678552076208', 'author': {'name': 'Андрей С.', 'avatarUrl': '//lh3.googleusercontent.com/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA\x3ds35', 'profileUrl': 'https://www.blogger.com/profile/15126306218969007936'}, 'displayTime': 'May 30, 2016 at 6:09 PM', 'deleteclass': 'item-control blog-admin '}, {'id': '835177506244476990', 'body': 'Hi. Is it possible to record data by Raspberry Pi and then analyse on the PC? I need to log data from the chineese power meter \x26quot;mhf120200P\x26quot; that uses nrf24 to transmit data. But I do not know the detailes of the signal (channel, etc..)', 'timestamp': '1464624601846', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1464624601846#c835177506244476990', 'author': {'name': 'Андрей С.', 'avatarUrl': '//lh3.googleusercontent.com/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA\x3ds35', 'profileUrl': 'https://www.blogger.com/profile/15126306218969007936'}, 'displayTime': 'May 30, 2016 at 6:10 PM', 'deleteclass': 'item-control blog-admin pid-879994042'}, {'id': '8597749664788981851', 'body': 'I get the following error message after starting the sniffer:\x3cbr /\x3e\x3cbr /\x3e\x26quot;M:\\Arduino\\Projecten\\NRF24_Sniffer-master\\SerialToPipe\\bin\\Win32\x26gt;nrf24sniff.exe -P9 -r2 -c76 -l5 -p4 -C2-a0xA8A8E1FC00\x3cbr /\x3e\x3cbr /\x3eConnect Wireshark to \\\\.\\pipe\\wireshark to continue...\x3cbr /\x3eWait for sniffer to restart -\x3cbr /\x3eALERT: Failed waiting for sniffer to restart\x26quot;\x3cbr /\x3e\x3cbr /\x3eThe Sniffer exits as soon as I start Wireshark....any suggestion?\x3cbr /\x3e', 'timestamp': '1465224890852', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1465224890852#c8597749664788981851', 'author': {'name': 'Anonymous', 'avatarUrl': '//img1.blogblog.com/img/blank.gif', 'profileUrl': ''}, 'displayTime': 'June 6, 2016 at 4:54 PM', 'deleteclass': 'item-control blog-admin pid-1431780567'}, {'id': '8790029167501459961', 'parentId': '8597749664788981851', 'body': 'Problem solved!! Forgot to uncomment #define BINARY_OUTPUT', 'timestamp': '1465233040569', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1465233040569#c8790029167501459961', 'author': {'name': 'Anonymous', 'avatarUrl': '//img1.blogblog.com/img/blank.gif', 'profileUrl': ''}, 'displayTime': 'June 6, 2016 at 7:10 PM', 'deleteclass': 'item-control blog-admin pid-1431780567'}, {'id': '7992035443677642152', 'parentId': '7133284410717801672', 'body': 'Did you connect the IRQ line from the nRF24 to the Arduino?\x3cbr /\x3eIt has to be connected for incoming packets to be captured.', 'timestamp': '1469359379611', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment\x3d1469359379611#c7992035443677642152', 'author': {'name': 'Yveaux', 'avatarUrl': '//3.bp.blogspot.com/-6bVamohyx0M/VWBDTCyUsiI/AAAAAAAAAQU/NtSso3hU9rI/s35/eray.jpg', 'profileUrl': 'https://www.blogger.com/profile/16599434883652140617'}, 'displayTime': 'July 24, 2016 at 1:22 PM', 'deleteclass': 'item-control blog-admin pid-1602163402'}];
+      var msgs = {'loadMore': 'Load more...', 'loading': 'Loading...', 'loaded': 'No more!', 'addComment': 'Add comment', 'reply': 'Reply', 'delete': 'Delete'};
+      var config = {'blogId': '1578010460921274916', 'postId': '6853369581807800535', 'feed': 'http://yveaux.blogspot.com/feeds/6853369581807800535/comments/default', 'authorName': 'Yveaux', 'authorUrl': 'https://www.blogger.com/profile/16599434883652140617', 'baseUri': 'https://www.blogger.com', 'maxThreadDepth': 2};
+
+// <![CDATA[
+      var cursor = null;
+      if (items && items.length > 0) {
+        cursor = parseInt(items[items.length - 1].timestamp) + 1;
+      }
+
+      var bodyFromEntry = function(entry) {
+        if (entry.gd$extendedProperty) {
+          for (var k in entry.gd$extendedProperty) {
+            if (entry.gd$extendedProperty[k].name == 'blogger.contentRemoved') {
+              return '<span class="deleted-comment">' + entry.content.$t + '</span>';
+            }
+          }
+        }
+        return entry.content.$t;
+      }
+
+      var parse = function(data) {
+        cursor = null;
+        var comments = [];
+        if (data && data.feed && data.feed.entry) {
+          for (var i = 0, entry; entry = data.feed.entry[i]; i++) {
+            var comment = {};
+            // comment ID, parsed out of the original id format
+            var id = /blog-(\d+).post-(\d+)/.exec(entry.id.$t);
+            comment.id = id ? id[2] : null;
+            comment.body = bodyFromEntry(entry);
+            comment.timestamp = Date.parse(entry.published.$t) + '';
+            if (entry.author && entry.author.constructor === Array) {
+              var auth = entry.author[0];
+              if (auth) {
+                comment.author = {
+                  name: (auth.name ? auth.name.$t : undefined),
+                  profileUrl: (auth.uri ? auth.uri.$t : undefined),
+                  avatarUrl: (auth.gd$image ? auth.gd$image.src : undefined)
+                };
+              }
+            }
+            if (entry.link) {
+              if (entry.link[2]) {
+                comment.link = comment.permalink = entry.link[2].href;
+              }
+              if (entry.link[3]) {
+                var pid = /.*comments\/default\/(\d+)\?.*/.exec(entry.link[3].href);
+                if (pid && pid[1]) {
+                  comment.parentId = pid[1];
+                }
+              }
+            }
+            comment.deleteclass = 'item-control blog-admin';
+            if (entry.gd$extendedProperty) {
+              for (var k in entry.gd$extendedProperty) {
+                if (entry.gd$extendedProperty[k].name == 'blogger.itemClass') {
+                  comment.deleteclass += ' ' + entry.gd$extendedProperty[k].value;
+                } else if (entry.gd$extendedProperty[k].name == 'blogger.displayTime') {
+                  comment.displayTime = entry.gd$extendedProperty[k].value;
+                }
+              }
+            }
+            comments.push(comment);
+          }
+        }
+        return comments;
+      };
+
+      var paginator = function(callback) {
+        if (hasMore()) {
+          var url = config.feed + '?alt=json&v=2&orderby=published&reverse=false&max-results=50';
+          if (cursor) {
+            url += '&published-min=' + new Date(cursor).toISOString();
+          }
+          window.bloggercomments = function(data) {
+            var parsed = parse(data);
+            cursor = parsed.length < 50 ? null
+                : parseInt(parsed[parsed.length - 1].timestamp) + 1
+            callback(parsed);
+            window.bloggercomments = null;
+          }
+          url += '&callback=bloggercomments';
+          var script = document.createElement('script');
+          script.type = 'text/javascript';
+          script.src = url;
+          document.getElementsByTagName('head')[0].appendChild(script);
+        }
+      };
+      var hasMore = function() {
+        return !!cursor;
+      };
+      var getMeta = function(key, comment) {
+        if ('iswriter' == key) {
+          var matches = !!comment.author
+              && comment.author.name == config.authorName
+              && comment.author.profileUrl == config.authorUrl;
+          return matches ? 'true' : '';
+        } else if ('deletelink' == key) {
+          return config.baseUri + '/delete-comment.g?blogID='
+               + config.blogId + '&postID=' + comment.id;
+        } else if ('deleteclass' == key) {
+          return comment.deleteclass;
+        }
+        return '';
+      };
+
+      var replybox = null;
+      var replyUrlParts = null;
+      var replyParent = undefined;
+
+      var onReply = function(commentId, domId) {
+        if (replybox == null) {
+          // lazily cache replybox, and adjust to suit this style:
+          replybox = document.getElementById('comment-editor');
+          if (replybox != null) {
+            replybox.height = '250px';
+            replybox.style.display = 'block';
+            replyUrlParts = replybox.src.split('#');
+          }
+        }
+        if (replybox && (commentId !== replyParent)) {
+          replybox.src = '';
+          document.getElementById(domId).insertBefore(replybox, null);
+          replybox.src = replyUrlParts[0]
+              + (commentId ? '&parentID=' + commentId : '')
+              + '#' + replyUrlParts[1];
+          replyParent = commentId;
+        }
+      };
+
+      var hash = (window.location.hash || '#').substring(1);
+      var startThread, targetComment;
+      if (/^comment-form_/.test(hash)) {
+        startThread = hash.substring('comment-form_'.length);
+      } else if (/^c[0-9]+$/.test(hash)) {
+        targetComment = hash.substring(1);
+      }
+
+      // Configure commenting API:
+      var configJso = {
+        'maxDepth': config.maxThreadDepth
+      };
+      var provider = {
+        'id': config.postId,
+        'data': items,
+        'loadNext': paginator,
+        'hasMore': hasMore,
+        'getMeta': getMeta,
+        'onReply': onReply,
+        'rendered': true,
+        'initComment': targetComment,
+        'initReplyThread': startThread,
+        'config': configJso,
+        'messages': msgs
+      };
+
+      var render = function() {
+        if (window.goog && window.goog.comments) {
+          var holder = document.getElementById('comment-holder');
+          window.goog.comments.render(holder, provider);
+        }
+      };
+
+      // render now, or queue to render when library loads:
+      if (window.goog && window.goog.comments) {
+        render();
+      } else {
+        window.goog = window.goog || {};
+        window.goog.comments = window.goog.comments || {};
+        window.goog.comments.loadQueue = window.goog.comments.loadQueue || [];
+        window.goog.comments.loadQueue.push(render);
+      }
+    })();
+// ]]>
+  </script>
+<div id="comment-holder">
+
+<div id="bc_0_29C" kind="c"><div id="bc_0_29CT"><div id="bc_0_28T" class="comment-thread" kind="r" t="0" u="0"><ol id="bc_0_28TB"><li id="bc_0_0B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/blank.gif"></div><div id="c3208417891989940502" class="comment-block"><div id="bc_0_0M" class="comment-header" kind="m"><cite class="user">Anonymous</cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1418116794032#c3208417891989940502">December 9, 2014 at 10:19 AM</a></span></div><p id="bc_0_0MC" class="comment-content">When i upload the sniffer.ino , i get the error: circularbuffer.h is missed??<br>i use arduino 1.5.8</p><span id="bc_0_0MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin pid-1801627485"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=3208417891989940502">Delete</a></span></span></div><div id="bc_0_0BR" class="comment-replies"></div><div id="bc_0_0B_box" class="comment-replybox-single"></div></li><li id="bc_0_1B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/blank.gif"></div><div id="c4596338569523112067" class="comment-block"><div id="bc_0_1M" class="comment-header" kind="m"><cite class="user">ariel</cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1425415540856#c4596338569523112067">March 3, 2015 at 9:45 PM</a></span></div><p id="bc_0_1MC" class="comment-content">You need first to Import the libraries CircularBuffer and RF24</p><span id="bc_0_1MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin pid-862275380"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=4596338569523112067">Delete</a></span></span></div><div id="bc_0_1BR" class="comment-replies"></div><div id="bc_0_1B_box" class="comment-replybox-single"></div></li><li id="bc_0_2B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/blank.gif"></div><div id="c4902283521565895480" class="comment-block"><div id="bc_0_2M" class="comment-header" kind="m"><cite class="user">ariel</cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1425415695976#c4902283521565895480">March 3, 2015 at 9:48 PM</a></span></div><p id="bc_0_2MC" class="comment-content">I use wireshark 1.12.1 and receive and error <br>"The procedure entry point tvb_length cold not be located in the dynamic library......"<br>Some one cold help me?</p><span id="bc_0_2MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin pid-862275380"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=4902283521565895480">Delete</a></span></span></div><div id="bc_0_2BR" class="comment-replies"></div><div id="bc_0_2B_box" class="comment-replybox-single"></div></li><li id="bc_0_3B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/-"></div><div id="c1032180344406470474" class="comment-block"><div id="bc_0_3M" class="comment-header" kind="m"><cite class="user blog-author"><a rel="nofollow" href="https://www.blogger.com/profile/16599434883652140617">Yveaux</a></cite><span class="icon user blog-author"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1425493494385#c1032180344406470474">March 4, 2015 at 7:24 PM</a></span></div><p id="bc_0_3MC" class="comment-content">Hey Ariel,<br><br>I developed using Wireshark 1.10.8. Probably the API has slightly changed since then.<br>Please try with Wireshark 1.10.x.</p><span id="bc_0_3MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin pid-1602163402"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=1032180344406470474">Delete</a></span></span></div><div id="bc_0_3BR" class="comment-replies"></div><div id="bc_0_3B_box" class="comment-replybox-single"></div></li><li id="bc_0_5B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA=s35"></div><div id="c4747270800680103448" class="comment-block"><div id="bc_0_5M" class="comment-header" kind="m"><cite class="user"><a rel="nofollow" href="https://www.blogger.com/profile/12154757892043906513">Donnie Jones</a></cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1426892291921#c4747270800680103448">March 20, 2015 at 11:58 PM</a></span></div><p id="bc_0_5MC" class="comment-content">Is it possible to use this with an Arduino Mega 2560 or an Arduino Pro?</p><span id="bc_0_5MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin pid-1659131472"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=4747270800680103448">Delete</a></span></span></div><div id="bc_0_5BR" class="comment-replies"><span id="bc_0_5b+seedB81KD" kind="d"><div id="bc_0_4T" class="comment-thread inline-thread" kind="t" t="0" u="0"><span id="bc_0_4TT" class="thread-toggle thread-expanded" kind="g"><span id="bc_0_4TA" class="thread-arrow"></span><span id="bc_0_4TN" class="thread-count"><span id="bc_0_4TNT" style="display: none;"></span><span id="bc_0_4TNU" style="display: none;"></span><a href="javascript:;" target="_self">Replies</a><div id="bc_0_4TD" class="thread-dropContainer thread-expanded"><span class="thread-drop"></span></div></span></span><ol id="bc_0_4TC" class="thread-chrome thread-expanded"><div><li id="bc_0_4B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/-"></div><div id="c6032774058469091564" class="comment-block"><div id="bc_0_4M" class="comment-header" kind="m"><cite class="user blog-author"><a rel="nofollow" href="https://www.blogger.com/profile/16599434883652140617">Yveaux</a></cite><span class="icon user blog-author"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1427028338910#c6032774058469091564">March 22, 2015 at 1:45 PM</a></span></div><p id="bc_0_4MC" class="comment-content">In principle it should work (maybe you have to change some pin assignments). I didn't test it, though. </p><span id="bc_0_4MN" class="comment-actions secondary-text" kind="m"><span class="item-control blog-admin pid-1602163402"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=6032774058469091564">Delete</a></span></span></div><div id="bc_0_4BR" class="comment-replies"></div><div id="bc_0_4B_box" class="comment-replybox-single"></div></li></div><div id="bc_0_4I" class="continue" kind="ci"><a href="javascript:;" target="_self">Reply</a></div></ol><div id="bc_0_4T_box" class="comment-replybox-thread"></div></div></span></div><div id="bc_0_5B_box" class="comment-replybox-single"></div></li><li id="bc_0_9B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/blank.gif"></div><div id="c3536871123888868255" class="comment-block"><div id="bc_0_9M" class="comment-header" kind="m"><cite class="user"><a rel="nofollow" href="https://malli.co.at/">Didi1357</a></cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1433695333178#c3536871123888868255">June 7, 2015 at 6:42 PM</a></span></div><p id="bc_0_9MC" class="comment-content">Hi.. I experimented a bit with your code and found some things I'd like to mention for others:<br><br>The code seems to be only able to capture Enhanced Shock Burst messages. I've also experienced problems whithout enabling the dynamic payload length bit on the TX device. The mentioned limitation in part 3 (node addresses can only be 1 byte long), isn't present in the nrf24 dissector... It's only in the mysensors dissector.<br><br>Anyways... Good work... I'll try to port the PC stuff to linux... If I succeed I'll contact you on github.</p><span id="bc_0_9MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin pid-1410569951"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=3536871123888868255">Delete</a></span></span></div><div id="bc_0_9BR" class="comment-replies"><span id="bc_0_9b+seedB81MD" kind="d"><div id="bc_0_6T" class="comment-thread inline-thread" kind="t" t="0" u="0"><span id="bc_0_6TT" class="thread-toggle thread-expanded" kind="g"><span id="bc_0_6TA" class="thread-arrow"></span><span id="bc_0_6TN" class="thread-count"><span id="bc_0_6TNT" style="display: none;"></span><span id="bc_0_6TNU" style="display: none;"></span><a href="javascript:;" target="_self">Replies</a><div id="bc_0_6TD" class="thread-dropContainer thread-expanded"><span class="thread-drop"></span></div></span></span><ol id="bc_0_6TC" class="thread-chrome thread-expanded"><div><li id="bc_0_6B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/eray.jpg"></div><div id="c3226207449729308027" class="comment-block"><div id="bc_0_6M" class="comment-header" kind="m"><cite class="user blog-author"><a rel="nofollow" href="https://www.blogger.com/profile/16599434883652140617">Yveaux</a></cite><span class="icon user blog-author"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1433702441518#c3226207449729308027">June 7, 2015 at 8:40 PM</a></span></div><p id="bc_0_6MC" class="comment-content">Hey Didi!<br><br>Thanks for the remarks! You're right about the node address: it used to be present, but I added a piece of configuration data (after writing this article) which is exchanged between the sniffer and the nrf24 dissector. I forgot to remove the limitation from this article ;-) <br>It would be very nice if we could have a shared codebase for both Windows &amp; Linux. Keep me informed!<br><br>Cheerz,<br><br>Yveaux</p><span id="bc_0_6MN" class="comment-actions secondary-text" kind="m"><span class="item-control blog-admin pid-1602163402"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=3226207449729308027">Delete</a></span></span></div><div id="bc_0_6BR" class="comment-replies"></div><div id="bc_0_6B_box" class="comment-replybox-single"></div></li><li id="bc_0_7B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/blank.gif"></div><div id="c2444908803381165697" class="comment-block"><div id="bc_0_7M" class="comment-header" kind="m"><cite class="user"><a rel="nofollow" href="https://malli.co.at/">Didi1357</a></cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1434207876615#c2444908803381165697">June 13, 2015 at 5:04 PM</a></span></div><p id="bc_0_7MC" class="comment-content">Sure.. I'm trying to change as little as possible... I will definitely not touch the Arduino Code for example, because I've got no clue of that and it seems to be a solid working piece of code which doesn't really come with any limitations... (Am I right assuming that it would even be possible to capture normal messages (Non Enhanced Shockburst) with just a new nrf24 dissector?)<br><br>There are major differences in serial connection handling on windows and linux though...<br><br>Greetings, Didi</p><span id="bc_0_7MN" class="comment-actions secondary-text" kind="m"><span class="item-control blog-admin pid-1869912876"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=2444908803381165697">Delete</a></span></span></div><div id="bc_0_7BR" class="comment-replies"></div><div id="bc_0_7B_box" class="comment-replybox-single"></div></li><li id="bc_0_8B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/blank.gif"></div><div id="c733581727954909639" class="comment-block"><div id="bc_0_8M" class="comment-header" kind="m"><cite class="user"><a rel="nofollow" href="https://malli.co.at/">Didi1357</a></cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1434208551940#c733581727954909639">June 13, 2015 at 5:15 PM</a></span></div><p id="bc_0_8MC" class="comment-content">Edit:<br>Have you ever tried to receive Enhanced ShockBurst message with NoAck Bit set? I'm not sure wheter I've made a mistake in my TX code or not... I'll try to debug that anyways sooner or later, but it would be awesome if you could save me some time with that information. :)<br><br>Greetings, Didi</p><span id="bc_0_8MN" class="comment-actions secondary-text" kind="m"><span class="item-control blog-admin pid-1869912876"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=733581727954909639">Delete</a></span></span></div><div id="bc_0_8BR" class="comment-replies"></div><div id="bc_0_8B_box" class="comment-replybox-single"></div></li></div><div id="bc_0_6I" class="continue" kind="ci"><a href="javascript:;" target="_self">Reply</a></div></ol><div id="bc_0_6T_box" class="comment-replybox-thread"></div></div></span></div><div id="bc_0_9B_box" class="comment-replybox-single"></div></li><li id="bc_0_10B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/blank.gif"></div><div id="c1485470187685214479" class="comment-block"><div id="bc_0_10M" class="comment-header" kind="m"><cite class="user"><a rel="nofollow" href="https://malli.co.at/">Didi1357</a></cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1438034820308#c1485470187685214479">July 28, 2015 at 12:07 AM</a></span></div><p id="bc_0_10MC" class="comment-content">Hi,<br><br>I ported the Serial2Pipe Tool to linux and filed a pull request on Github.<br><br>I was also able to answer my questions above on my own:<br>The Arduino code is also assuming Enhanced Shockburst messages with a dynamic payload.<br>The error seems to be in my TX code. So this project just works like expected.<br><br>Greetings, Didi.</p><span id="bc_0_10MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin pid-1041143453"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=1485470187685214479">Delete</a></span></span></div><div id="bc_0_10BR" class="comment-replies"></div><div id="bc_0_10B_box" class="comment-replybox-single"></div></li><li id="bc_0_11B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/blank.gif"></div><div id="c8662647917342401638" class="comment-block"><div id="bc_0_11M" class="comment-header" kind="m"><cite class="user"><a rel="nofollow" href="https://twitter.com/wopot">wopot</a></cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1445620964514#c8662647917342401638">October 23, 2015 at 7:22 PM</a></span></div><p id="bc_0_11MC" class="comment-content">why you no ESP8266?</p><span id="bc_0_11MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin pid-960460870"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=8662647917342401638">Delete</a></span></span></div><div id="bc_0_11BR" class="comment-replies"></div><div id="bc_0_11B_box" class="comment-replybox-single"></div></li><li id="bc_0_12B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA=s35"></div><div id="c8125043321973592414" class="comment-block"><div id="bc_0_12M" class="comment-header" kind="m"><cite class="user"><a rel="nofollow" href="https://www.blogger.com/profile/08548199690581295559">夢蝶園</a></cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1459023593097#c8125043321973592414">March 26, 2016 at 9:19 PM</a></span></div><p id="bc_0_12MC" class="comment-content"><span class="deleted-comment">This comment has been removed by the author.</span></p><span id="bc_0_12MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin "><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=8125043321973592414">Delete</a></span></span></div><div id="bc_0_12BR" class="comment-replies"></div><div id="bc_0_12B_box" class="comment-replybox-single"></div></li><li id="bc_0_20B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/blank.gif"></div><div id="c5171130200301213199" class="comment-block"><div id="bc_0_20M" class="comment-header" kind="m"><cite class="user">Anonymous</cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1460581779170#c5171130200301213199">April 13, 2016 at 11:09 PM</a></span></div><p id="bc_0_20MC" class="comment-content">Hello. I copied files to "d:\Program Files\Wireshark\plugins\2.0.2\nrf24.dll" <br>But I received an error. Please, see the picture<br><br>https://www.dropbox.com/s/9domyxzd0u1u4ig/Problem.png?dl=0</p><span id="bc_0_20MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin pid-1899850286"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=5171130200301213199">Delete</a></span></span></div><div id="bc_0_20BR" class="comment-replies"><span id="bc_0_20b+seedB81TD" kind="d"><div id="bc_0_13T" class="comment-thread inline-thread" kind="t" t="0" u="0"><span id="bc_0_13TT" class="thread-toggle thread-expanded" kind="g"><span id="bc_0_13TA" class="thread-arrow"></span><span id="bc_0_13TN" class="thread-count"><span id="bc_0_13TNT" style="display: none;"></span><span id="bc_0_13TNU" style="display: none;"></span><a href="javascript:;" target="_self">Replies</a><div id="bc_0_13TD" class="thread-dropContainer thread-expanded"><span class="thread-drop"></span></div></span></span><ol id="bc_0_13TC" class="thread-chrome thread-expanded"><div><li id="bc_0_13B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/eray.jpg"></div><div id="c2268630251364018745" class="comment-block"><div id="bc_0_13M" class="comment-header" kind="m"><cite class="user blog-author"><a rel="nofollow" href="https://www.blogger.com/profile/16599434883652140617">Yveaux</a></cite><span class="icon user blog-author"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1460790385224#c2268630251364018745">April 16, 2016 at 9:06 AM</a></span></div><p id="bc_0_13MC" class="comment-content">Use Wireshark 1.10.8, as I did. Wireshark tends to change their plugin interface regularly and this is what you've probably ran into.<br>You can get it here: https://www.wireshark.org/download/win32/all-versions/<br><br>Good luck!</p><span id="bc_0_13MN" class="comment-actions secondary-text" kind="m"><span class="item-control blog-admin pid-1602163402"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=2268630251364018745">Delete</a></span></span></div><div id="bc_0_13BR" class="comment-replies"></div><div id="bc_0_13B_box" class="comment-replybox-single"></div></li><li id="bc_0_14B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA=s35"></div><div id="c5595484188936184812" class="comment-block"><div id="bc_0_14M" class="comment-header" kind="m"><cite class="user"><a rel="nofollow" href="https://www.blogger.com/profile/12401506577028079517">Lyubomyr Demkiv</a></cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1463506516250#c5595484188936184812">May 17, 2016 at 7:35 PM</a></span></div><p id="bc_0_14MC" class="comment-content"><span class="deleted-comment">This comment has been removed by the author.</span></p><span id="bc_0_14MN" class="comment-actions secondary-text" kind="m"><span class="item-control blog-admin "><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=5595484188936184812">Delete</a></span></span></div><div id="bc_0_14BR" class="comment-replies"></div><div id="bc_0_14B_box" class="comment-replybox-single"></div></li><li id="bc_0_15B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/blank.gif"></div><div id="c8274199369145198232" class="comment-block"><div id="bc_0_15M" class="comment-header" kind="m"><cite class="user">Anonymous</cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1463506567933#c8274199369145198232">May 17, 2016 at 7:36 PM</a></span></div><p id="bc_0_15MC" class="comment-content">Thank You very much for reply. It worked. I receive no errors, but I can't catch any packets.<br>I connected GateWay and a node with humidity sensor. Domotics is receiving data but I can't see it in the Wireshark. Can You, please, help me?<br>I'm using Mysensors 1.5<br><br>Connect Wireshark to \\.\pipe\wireshark to continue...<br>Wait for sniffer to restart Ok<br><br>Channel: 76<br>Datarate: 1Mb/s<br>Address: 0xa8a8e1fc**<br>Max payload: 32<br>CRC length: 2<br>Captured 0 packets, Lost 0 packets</p><span id="bc_0_15MN" class="comment-actions secondary-text" kind="m"><span class="item-control blog-admin pid-459054700"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=8274199369145198232">Delete</a></span></span></div><div id="bc_0_15BR" class="comment-replies"></div><div id="bc_0_15B_box" class="comment-replybox-single"></div></li><li id="bc_0_16B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/blank.gif"></div><div id="c2091049812915158087" class="comment-block"><div id="bc_0_16M" class="comment-header" kind="m"><cite class="user">Anonymous</cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1463508418196#c2091049812915158087">May 17, 2016 at 8:06 PM</a></span></div><p id="bc_0_16MC" class="comment-content">Here is data from serial (I stopped Wireshark for this and commented binary_output )<br><br>-- RF24 Sniff --<br>4e 4c00050400fce1a8a80000000220 Channel:     76<br>Datarate:    1Mb/s<br>Address:     0xA8A8E1FC**<br>Max payload: 32<br>CRC length:  2<br><br>STATUS   = 0x0e RX_DR=0 TX_DS=0 MAX_RT=0 RX_P_NO=7 TX_FULL=0<br>RX_ADDR_P0-1 = 0xa8a8e1fc 0xc2c2c2c2<br><br>//Some other data<br><br>Listening...<br> <br>And this is all.<br>What am I doing wrong?</p><span id="bc_0_16MN" class="comment-actions secondary-text" kind="m"><span class="item-control blog-admin pid-459054700"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=2091049812915158087">Delete</a></span></span></div><div id="bc_0_16BR" class="comment-replies"></div><div id="bc_0_16B_box" class="comment-replybox-single"></div></li><li id="bc_0_17B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA=s35"></div><div id="c8044065300709091016" class="comment-block"><div id="bc_0_17M" class="comment-header" kind="m"><cite class="user"><a rel="nofollow" href="https://www.blogger.com/profile/12401506577028079517">Lyubomyr Demkiv</a></cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1463509157379#c8044065300709091016">May 17, 2016 at 8:19 PM</a></span></div><p id="bc_0_17MC" class="comment-content"><span class="deleted-comment">This comment has been removed by the author.</span></p><span id="bc_0_17MN" class="comment-actions secondary-text" kind="m"><span class="item-control blog-admin "><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=8044065300709091016">Delete</a></span></span></div><div id="bc_0_17BR" class="comment-replies"></div><div id="bc_0_17B_box" class="comment-replybox-single"></div></li><li id="bc_0_18B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/blank.gif"></div><div id="c7620828913902499311" class="comment-block"><div id="bc_0_18M" class="comment-header" kind="m"><cite class="user">Anonymous</cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1463509192750#c7620828913902499311">May 17, 2016 at 8:19 PM</a></span></div><p id="bc_0_18MC" class="comment-content">I changed to -r2 and it works :)</p><span id="bc_0_18MN" class="comment-actions secondary-text" kind="m"><span class="item-control blog-admin pid-459054700"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=7620828913902499311">Delete</a></span></span></div><div id="bc_0_18BR" class="comment-replies"></div><div id="bc_0_18B_box" class="comment-replybox-single"></div></li><li id="bc_0_19B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/eray.jpg"></div><div id="c4699701251579599704" class="comment-block"><div id="bc_0_19M" class="comment-header" kind="m"><cite class="user blog-author"><a rel="nofollow" href="https://www.blogger.com/profile/16599434883652140617">Yveaux</a></cite><span class="icon user blog-author"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1463510076043#c4699701251579599704">May 17, 2016 at 8:34 PM</a></span></div><p id="bc_0_19MC" class="comment-content">Yup, -r2 sets datarate to 250KBit/s, which is default for MySensors.<br>Great to hear you finally gor it working!<br>To anybody else not capturing any packets: check-double-check the wireless parameters! Wrong configuration will cause you to capture nothing.</p><span id="bc_0_19MN" class="comment-actions secondary-text" kind="m"><span class="item-control blog-admin pid-1602163402"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=4699701251579599704">Delete</a></span></span></div><div id="bc_0_19BR" class="comment-replies"></div><div id="bc_0_19B_box" class="comment-replybox-single"></div></li></div><div id="bc_0_13I" class="continue" kind="ci"><a href="javascript:;" target="_self">Reply</a></div></ol><div id="bc_0_13T_box" class="comment-replybox-thread"></div></div></span></div><div id="bc_0_20B_box" class="comment-replybox-single"></div></li><li id="bc_0_23B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/photo.jpg"></div><div id="c7133284410717801672" class="comment-block"><div id="bc_0_23M" class="comment-header" kind="m"><cite class="user"><a rel="nofollow" href="https://www.blogger.com/profile/09082877377346697367">Mikhail Oparin</a></cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1461267946621#c7133284410717801672">April 21, 2016 at 9:45 PM</a></span></div><p id="bc_0_23MC" class="comment-content">I set up everything as per your instructions, but Wireshark doesn't sniff any traffic. No errors, just captured 0 packets, lost 0 packets. When I unplug nRF24L01+ from Arduino during the sniffing process it shows me "illegal serial packet size 9". Any ideas what I could possibly do wrong? I checked and doublechecked all the instructions everything 100 times. Thanks in advance.</p><span id="bc_0_23MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin pid-348852392"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=7133284410717801672">Delete</a></span></span></div><div id="bc_0_23BR" class="comment-replies"><span id="bc_0_23b+seedB81VD" kind="d"><div id="bc_0_21T" class="comment-thread inline-thread" kind="t" t="0" u="0"><span id="bc_0_21TT" class="thread-toggle thread-expanded" kind="g"><span id="bc_0_21TA" class="thread-arrow"></span><span id="bc_0_21TN" class="thread-count"><span id="bc_0_21TNT" style="display: none;"></span><span id="bc_0_21TNU" style="display: none;"></span><a href="javascript:;" target="_self">Replies</a><div id="bc_0_21TD" class="thread-dropContainer thread-expanded"><span class="thread-drop"></span></div></span></span><ol id="bc_0_21TC" class="thread-chrome thread-expanded"><div><li id="bc_0_21B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA=s35"></div><div id="c1398546224354876735" class="comment-block"><div id="bc_0_21M" class="comment-header" kind="m"><cite class="user"><a rel="nofollow" href="https://www.blogger.com/profile/16184669632726638674">KT</a></cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1463003378715#c1398546224354876735">May 11, 2016 at 11:49 PM</a></span></div><p id="bc_0_21MC" class="comment-content">I`m getting the same problem. <br>any ideas how to solve this?</p><span id="bc_0_21MN" class="comment-actions secondary-text" kind="m"><span class="item-control blog-admin pid-363925357"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=1398546224354876735">Delete</a></span></span></div><div id="bc_0_21BR" class="comment-replies"></div><div id="bc_0_21B_box" class="comment-replybox-single"></div></li><li id="bc_0_22B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/eray.jpg"></div><div id="c7992035443677642152" class="comment-block"><div id="bc_0_22M" class="comment-header" kind="m"><cite class="user blog-author"><a rel="nofollow" href="https://www.blogger.com/profile/16599434883652140617">Yveaux</a></cite><span class="icon user blog-author"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1469359379611#c7992035443677642152">July 24, 2016 at 1:22 PM</a></span></div><p id="bc_0_22MC" class="comment-content">Did you connect the IRQ line from the nRF24 to the Arduino?<br>It has to be connected for incoming packets to be captured.</p><span id="bc_0_22MN" class="comment-actions secondary-text" kind="m"><span class="item-control blog-admin pid-1602163402"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=7992035443677642152">Delete</a></span></span></div><div id="bc_0_22BR" class="comment-replies"></div><div id="bc_0_22B_box" class="comment-replybox-single"></div></li></div><div id="bc_0_21I" class="continue" kind="ci"><a href="javascript:;" target="_self">Reply</a></div></ol><div id="bc_0_21T_box" class="comment-replybox-thread"></div></div></span></div><div id="bc_0_23B_box" class="comment-replybox-single"></div></li><li id="bc_0_24B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA=s35"></div><div id="c5592178678552076208" class="comment-block"><div id="bc_0_24M" class="comment-header" kind="m"><cite class="user"><a rel="nofollow" href="https://www.blogger.com/profile/15126306218969007936">Андрей С.</a></cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1464624558647#c5592178678552076208">May 30, 2016 at 6:09 PM</a></span></div><p id="bc_0_24MC" class="comment-content"><span class="deleted-comment">This comment has been removed by the author.</span></p><span id="bc_0_24MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin "><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=5592178678552076208">Delete</a></span></span></div><div id="bc_0_24BR" class="comment-replies"></div><div id="bc_0_24B_box" class="comment-replybox-single"></div></li><li id="bc_0_25B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/zFdxGE77vvD2w5xHy6jkVuElKv-U9_9qLkRYK8OnbDeJPtjSZ82UPq5w6hJ-SA=s35"></div><div id="c835177506244476990" class="comment-block"><div id="bc_0_25M" class="comment-header" kind="m"><cite class="user"><a rel="nofollow" href="https://www.blogger.com/profile/15126306218969007936">Андрей С.</a></cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1464624601846#c835177506244476990">May 30, 2016 at 6:10 PM</a></span></div><p id="bc_0_25MC" class="comment-content">Hi. Is it possible to record data by Raspberry Pi and then analyse on the PC? I need to log data from the chineese power meter "mhf120200P" that uses nrf24 to transmit data. But I do not know the detailes of the signal (channel, etc..)</p><span id="bc_0_25MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin pid-879994042"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=835177506244476990">Delete</a></span></span></div><div id="bc_0_25BR" class="comment-replies"></div><div id="bc_0_25B_box" class="comment-replybox-single"></div></li><li id="bc_0_27B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/blank.gif"></div><div id="c8597749664788981851" class="comment-block"><div id="bc_0_27M" class="comment-header" kind="m"><cite class="user">Anonymous</cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1465224890852#c8597749664788981851">June 6, 2016 at 4:54 PM</a></span></div><p id="bc_0_27MC" class="comment-content">I get the following error message after starting the sniffer:<br><br>"M:\Arduino\Projecten\NRF24_Sniffer-master\SerialToPipe\bin\Win32&gt;nrf24sniff.exe -P9 -r2 -c76 -l5 -p4 -C2-a0xA8A8E1FC00<br><br>Connect Wireshark to \\.\pipe\wireshark to continue...<br>Wait for sniffer to restart -<br>ALERT: Failed waiting for sniffer to restart"<br><br>The Sniffer exits as soon as I start Wireshark....any suggestion?<br></p><span id="bc_0_27MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin pid-1431780567"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=8597749664788981851">Delete</a></span></span></div><div id="bc_0_27BR" class="comment-replies"><span id="bc_0_27b+seedB81fD" kind="d"><div id="bc_0_26T" class="comment-thread inline-thread" kind="t" t="0" u="0"><span id="bc_0_26TT" class="thread-toggle thread-expanded" kind="g"><span id="bc_0_26TA" class="thread-arrow"></span><span id="bc_0_26TN" class="thread-count"><span id="bc_0_26TNT" style="display: none;"></span><span id="bc_0_26TNU" style="display: none;"></span><a href="javascript:;" target="_self">Replies</a><div id="bc_0_26TD" class="thread-dropContainer thread-expanded"><span class="thread-drop"></span></div></span></span><ol id="bc_0_26TC" class="thread-chrome thread-expanded"><div><li id="bc_0_26B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/blank.gif"></div><div id="c8790029167501459961" class="comment-block"><div id="bc_0_26M" class="comment-header" kind="m"><cite class="user">Anonymous</cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html?showComment=1465233040569#c8790029167501459961">June 6, 2016 at 7:10 PM</a></span></div><p id="bc_0_26MC" class="comment-content">Problem solved!! Forgot to uncomment #define BINARY_OUTPUT</p><span id="bc_0_26MN" class="comment-actions secondary-text" kind="m"><span class="item-control blog-admin pid-1431780567"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=8790029167501459961">Delete</a></span></span></div><div id="bc_0_26BR" class="comment-replies"></div><div id="bc_0_26B_box" class="comment-replybox-single"></div></li></div><div id="bc_0_26I" class="continue" kind="ci"><a href="javascript:;" target="_self">Reply</a></div></ol><div id="bc_0_26T_box" class="comment-replybox-thread"></div></div></span></div><div id="bc_0_27B_box" class="comment-replybox-single"></div></li></ol><div id="bc_0_28I" class="continue" kind="ci" style="display: none;"><a href="javascript:;" target="_self">Add comment</a></div><div id="bc_0_28T_box" class="comment-replybox-thread"><iframe allowtransparency="true" class="blogger-iframe-colorize blogger-comment-from-post" frameborder="0" height="250px" id="comment-editor" name="comment-editor" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/comment-iframe.html" width="100%" style="display: block;" data-resized="true"></iframe></div><div id="bc_0_28L" class="loadmore loaded" kind="rb"><a href="javascript:;" target="_self">Load more...</a></div></div></div></div></div>
+</div>
+<p class="comment-footer">
+</p><div class="comment-form">
+<a name="comment-form"></a>
+<p>
+</p>
+<a href="https://www.blogger.com/comment-iframe.g?blogID=1578010460921274916&amp;postID=6853369581807800535&amp;blogspotRpcToken=6654704" id="comment-editor-src"></a>
+
+<script type="text/javascript" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/1003877814-comment_from_post_iframe.js"></script>
+<script type="text/javascript">
+      BLOG_CMT_createIframe('https://www.blogger.com/rpc_relay.html');
+    </script>
+</div>
+<p></p>
+<div id="backlinks-container">
+<div id="Blog1_backlinks-container">
+</div>
+</div>
+</div>
+</div>
+
+        </div></div>
+      
+</div>
+<div class="blog-pager" id="blog-pager">
+<span id="blog-pager-newer-link">
+<a class="blog-pager-newer-link" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-3.html" id="Blog1_blog-pager-newer-link" title="Newer Post">Newer Post</a>
+</span>
+<span id="blog-pager-older-link">
+<a class="blog-pager-older-link" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html" id="Blog1_blog-pager-older-link" title="Older Post">Older Post</a>
+</span>
+<a class="home-link" href="http://yveaux.blogspot.com/">Home</a>
+</div>
+<div class="clear"></div>
+<div class="post-feeds">
+<div class="feed-links">
+Subscribe to:
+<a class="feed-link" href="http://yveaux.blogspot.com/feeds/6853369581807800535/comments/default" target="_blank" type="application/atom+xml">Post Comments (Atom)</a>
+</div>
+</div>
+<script type="text/javascript">window.___gcfg = {'lang': 'en'};</script>
+</div></div>
+</div>
+</div>
+<div class="column-left-outer">
+<div class="column-left-inner">
+<aside>
+</aside>
+</div>
+</div>
+<div class="column-right-outer">
+<div class="column-right-inner">
+<aside>
+<div class="sidebar section" id="sidebar-right-1"><div class="widget Text" data-version="1" id="Text1">
+<h2 class="title">For hire!</h2>
+<div class="widget-content">
+<div><span style="font-family: Trebuchet MS, sans-serif;"><span style="font-family:Trebuchet MS, sans-serif;"></span><span style="font-family: Trebuchet MS, sans-serif; font-style: normal; font-variant: normal; font-weight: normal; line-height: normal;font-family: Trebuchet MS, sans-serif;, serif;font-size:100%;">I'm a freelance embedded software designer who's always looking for new challenges!</span></span></div><div style="font-style: normal; font-variant: normal; font-weight: normal; line-height: normal;font-family: Trebuchet MS, sans-serif;font-size:100%;"><span style="font-family: Trebuchet MS, sans-serif;"><span style="font-size:100%;">Please visit my company's website at </span></span><a href="http://www.emmission.nl/" style="font-family: Trebuchet MS, sans-serif; font-size: 100%; font-style: normal; font-variant: normal; font-weight: normal; line-height: normal;">www.emmission.nl</a></div>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=1578010460921274916&amp;widgetType=Text&amp;widgetId=Text1&amp;action=editWidget&amp;sectionId=sidebar-right-1" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;Text1&quot;));" target="configText1" title="Edit">
+<img alt="" height="18" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div><div class="widget Profile" data-version="1" id="Profile1">
+<h2>About Me</h2>
+<div class="widget-content">
+<a href="https://www.blogger.com/profile/16599434883652140617"><img alt="My photo" class="profile-img" height="80" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/eray(1).jpg" width="80"></a>
+<dl class="profile-datablock">
+<dt class="profile-data">
+<a class="profile-name-link g-profile" href="https://www.blogger.com/profile/16599434883652140617" rel="author" style="background-image: url(//www.blogger.com/img/logo-16.png);" data-gapiscan="true" data-onload="true" data-gapiattached="true">
+Yveaux
+</a>
+</dt>
+<dd class="profile-data">Netherlands</dd>
+</dl>
+<a class="profile-link" href="https://www.blogger.com/profile/16599434883652140617" rel="author">View my complete profile</a>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=1578010460921274916&amp;widgetType=Profile&amp;widgetId=Profile1&amp;action=editWidget&amp;sectionId=sidebar-right-1" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;Profile1&quot;));" target="configProfile1" title="Edit">
+<img alt="" height="18" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div>
+</div><div class="widget BlogArchive" data-version="1" id="BlogArchive1">
+<h2>Blog Archive</h2>
+<div class="widget-content">
+<div id="ArchiveList">
+<div id="BlogArchive1_ArchiveList">
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://yveaux.blogspot.com/search?updated-min=2015-01-01T00:00:00%2B01:00&amp;updated-max=2016-01-01T00:00:00%2B01:00&amp;max-results=1">
+2015
+</a>
+<span class="post-count" dir="ltr">(1)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://yveaux.blogspot.com/2015_08_01_archive.html">
+August
+</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate expanded">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy toggle-open">
+
+        ▼&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://yveaux.blogspot.com/search?updated-min=2014-01-01T00:00:00%2B01:00&amp;updated-max=2015-01-01T00:00:00%2B01:00&amp;max-results=6">
+2014
+</a>
+<span class="post-count" dir="ltr">(6)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://yveaux.blogspot.com/2014_08_01_archive.html">
+August
+</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate expanded">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy toggle-open">
+
+        ▼&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://yveaux.blogspot.com/2014_07_01_archive.html">
+July
+</a>
+<span class="post-count" dir="ltr">(5)</span>
+<ul class="posts">
+<li><a href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-3.html">nRF24L01+ sniffer - part 3</a></li>
+<li><a href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html">nRF24L01+ sniffer - part 2</a></li>
+<li><a href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html">nRF24L01+ sniffer - part 1</a></li>
+<li><a href="http://yveaux.blogspot.com/2014/07/changing-arduino-bootloader-to-optiboot.html">Changing Arduino bootloader to Optiboot</a></li>
+<li><a href="http://yveaux.blogspot.com/2014/07/mysensors.html">MySensors</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=1578010460921274916&amp;widgetType=BlogArchive&amp;widgetId=BlogArchive1&amp;action=editWidget&amp;sectionId=sidebar-right-1" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;BlogArchive1&quot;));" target="configBlogArchive1" title="Edit">
+<img alt="" height="18" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div>
+</div></div>
+</aside>
+</div>
+</div>
+</div>
+<div style="clear: both"></div>
+<!-- columns -->
+</div>
+<!-- main -->
+</div>
+</div>
+<div class="main-cap-bottom cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+<footer>
+<div class="footer-outer">
+<div class="footer-cap-top cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left footer-fauxborder-left">
+<div class="fauxborder-right footer-fauxborder-right"></div>
+<div class="region-inner footer-inner">
+<div class="foot no-items section" id="footer-1"></div>
+<table border="0" cellpadding="0" cellspacing="0" class="section-columns columns-2">
+<tbody>
+<tr>
+<td class="first columns-cell">
+<div class="foot no-items section" id="footer-2-1"></div>
+</td>
+<td class="columns-cell">
+<div class="foot no-items section" id="footer-2-2"></div>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- outside of the include in order to lock Attribution widget -->
+<div class="foot section" id="footer-3" name="Footer"><div class="widget Attribution" data-version="1" id="Attribution1">
+<div class="widget-content" style="text-align: center;">
+© 2014 Yveaux<br>. Awesome Inc. template. Template images by <a href="http://www.istockphoto.com/googleimages.php?id=2904973&amp;platform=blogger&amp;langregion=en" target="_blank">enot-poloskun</a>. Powered by <a href="https://www.blogger.com/" target="_blank">Blogger</a>.
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=1578010460921274916&amp;widgetType=Attribution&amp;widgetId=Attribution1&amp;action=editWidget&amp;sectionId=footer-3" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;Attribution1&quot;));" target="configAttribution1" title="Edit">
+<img alt="" height="18" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div></div>
+</div>
+</div>
+<div class="footer-cap-bottom cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+</footer>
+<!-- content -->
+</div>
+</div>
+<div class="content-cap-bottom cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+</div>
+<script type="text/javascript">
+    window.setTimeout(function() {
+        document.body.className = document.body.className.replace('loading', '');
+      }, 10);
+  </script>
+
+<script type="text/javascript" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/1016236460-widgets.js"></script>
+<script type="text/javascript" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/plusone.js" gapi_processed="true"></script>
+<script type="text/javascript">
+window['__wavt'] = 'AOuZoY6qdTVCNbHCWGg9E8c9crj5wql7bA:1487803197433';_WidgetManager._Init('//www.blogger.com/rearrange?blogID\x3d1578010460921274916','//yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html','1578010460921274916');
+_WidgetManager._SetDataContext([{'name': 'blog', 'data': {'blogId': '1578010460921274916', 'bloggerUrl': 'https://www.blogger.com', 'title': 'Embedded Innovation', 'pageType': 'item', 'postId': '6853369581807800535', 'url': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html', 'canonicalUrl': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html', 'homepageUrl': 'http://yveaux.blogspot.com/', 'searchUrl': 'http://yveaux.blogspot.com/search', 'canonicalHomepageUrl': 'http://yveaux.blogspot.com/', 'blogspotFaviconUrl': 'http://yveaux.blogspot.com/favicon.ico', 'hasCustomDomain': false, 'enabledCommentProfileImages': true, 'gPlusViewType': 'FILTERED_POSTMOD', 'adultContent': false, 'analyticsAccountNumber': '', 'useUniversalAnalytics': false, 'pageName': 'nRF24L01+ sniffer - part 2', 'pageTitle': 'Embedded Innovation: nRF24L01+ sniffer - part 2', 'encoding': 'UTF-8', 'locale': 'en', 'localeUnderscoreDelimited': 'en', 'isPrivate': false, 'isMobile': false, 'isMobileRequest': false, 'mobileClass': '', 'isPrivateBlog': false, 'languageDirection': 'ltr', 'feedLinks': '\x3clink rel\x3d\x22alternate\x22 type\x3d\x22application/atom+xml\x22 title\x3d\x22Embedded Innovation - Atom\x22 href\x3d\x22http://yveaux.blogspot.com/feeds/posts/default\x22 /\x3e\n\x3clink rel\x3d\x22alternate\x22 type\x3d\x22application/rss+xml\x22 title\x3d\x22Embedded Innovation - RSS\x22 href\x3d\x22http://yveaux.blogspot.com/feeds/posts/default?alt\x3drss\x22 /\x3e\n\x3clink rel\x3d\x22service.post\x22 type\x3d\x22application/atom+xml\x22 title\x3d\x22Embedded Innovation - Atom\x22 href\x3d\x22https://www.blogger.com/feeds/1578010460921274916/posts/default\x22 /\x3e\n\n\x3clink rel\x3d\x22alternate\x22 type\x3d\x22application/atom+xml\x22 title\x3d\x22Embedded Innovation - Atom\x22 href\x3d\x22http://yveaux.blogspot.com/feeds/6853369581807800535/comments/default\x22 /\x3e\n', 'meTag': '', 'openIdOpTag': '', 'postImageThumbnailUrl': 'http://1.bp.blogspot.com/-dp_UoaD5OAs/U9P_W3dq-QI/AAAAAAAAAF0/jaaJh634KhI/s72-c/nRF24L01.png', 'postImageUrl': 'http://1.bp.blogspot.com/-dp_UoaD5OAs/U9P_W3dq-QI/AAAAAAAAAF0/jaaJh634KhI/s1600/nRF24L01.png', 'mobileHeadScript': '', 'adsenseHostId': 'ca-host-pub-1556223355139109', 'ieCssRetrofitLinks': '\x3c!--[if IE]\x3e\x3cscript type\x3d\x22text/javascript\x22 src\x3d\x22https://www.blogger.com/static/v1/jsbin/4111605327-ieretrofit.js\x22\x3e\x3c/script\x3e\n\x3c![endif]--\x3e', 'view': '', 'dynamicViewsCommentsSrc': '//www.blogblog.com/dynamicviews/4224c15c4e7c9321/js/comments.js', 'dynamicViewsScriptSrc': '//www.blogblog.com/dynamicviews/3e30a86b28853a80', 'plusOneApiSrc': 'https://apis.google.com/js/plusone.js', 'sharing': {'platforms': [{'name': 'Get link', 'key': 'link', 'shareMessage': 'Get link', 'target': ''}, {'name': 'Facebook', 'key': 'facebook', 'shareMessage': 'Share to Facebook', 'target': 'facebook'}, {'name': 'BlogThis!', 'key': 'blogThis', 'shareMessage': 'BlogThis!', 'target': 'blog'}, {'name': 'Twitter', 'key': 'twitter', 'shareMessage': 'Share to Twitter', 'target': 'twitter'}, {'name': 'Pinterest', 'key': 'pinterest', 'shareMessage': 'Share to Pinterest', 'target': 'pinterest'}, {'name': 'Google+', 'key': 'googlePlus', 'shareMessage': 'Share to Google+', 'target': 'googleplus'}, {'name': 'Email', 'key': 'email', 'shareMessage': 'Email', 'target': 'email'}], 'googlePlusShareButtonWidth': 300, 'googlePlusBootstrap': '\x3cscript type\x3d\x22text/javascript\x22\x3ewindow.___gcfg \x3d {\x27lang\x27: \x27en\x27};\x3c/script\x3e'}}}, {'name': 'features', 'data': {'enhancedSourcesets': 'true', 'unsupported_browser_message': 'false'}}, {'name': 'messages', 'data': {'linkCopiedToClipboard': 'Link copied to clipboard!', 'postLink': 'Post Link'}}, {'name': 'template', 'data': {'name': 'Awesome Inc.', 'localizedName': 'Awesome Inc.', 'variant': 'dark', 'isResponsive': false, 'isAlternateRendering': false, 'isCustom': false}}, {'name': 'view', 'data': {'classic': {'name': 'classic', 'url': '?view\x3dclassic'}, 'flipcard': {'name': 'flipcard', 'url': '?view\x3dflipcard'}, 'magazine': {'name': 'magazine', 'url': '?view\x3dmagazine'}, 'mosaic': {'name': 'mosaic', 'url': '?view\x3dmosaic'}, 'sidebar': {'name': 'sidebar', 'url': '?view\x3dsidebar'}, 'snapshot': {'name': 'snapshot', 'url': '?view\x3dsnapshot'}, 'timeslide': {'name': 'timeslide', 'url': '?view\x3dtimeslide'}, 'isMobile': false, 'title': 'nRF24L01+ sniffer - part 2', 'description': ' Hardware   The requirement to use cheap commodity hardware resulted in the use of a standard Arduino Uno R3 &#160;and a single nRF24L01+ module ...', 'featuredImage': 'http://1.bp.blogspot.com/-dp_UoaD5OAs/U9P_W3dq-QI/AAAAAAAAAF0/jaaJh634KhI/s1600/nRF24L01.png', 'url': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html', 'type': 'item', 'isSingleItem': true, 'isMultipleItems': false, 'isError': false, 'isPage': false, 'isPost': true, 'isHomepage': false, 'isArchive': false, 'isLabelSearch': false, 'postId': 6853369581807800535}}]);
+_WidgetManager._RegisterWidget('_HeaderView', new _WidgetInfo('Header1', 'header', null, document.getElementById('Header1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogView', new _WidgetInfo('Blog1', 'main', null, document.getElementById('Blog1'), {'cmtInteractionsEnabled': false, 'lightboxEnabled': true, 'lightboxModuleUrl': 'https://www.blogger.com/static/v1/jsbin/1130279207-lbx.js', 'lightboxCssUrl': 'https://www.blogger.com/static/v1/v-css/368954415-lightbox_bundle.css'}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_TextView', new _WidgetInfo('Text1', 'sidebar-right-1', null, document.getElementById('Text1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_ProfileView', new _WidgetInfo('Profile1', 'sidebar-right-1', null, document.getElementById('Profile1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogArchiveView', new _WidgetInfo('BlogArchive1', 'sidebar-right-1', null, document.getElementById('BlogArchive1'), {'languageDirection': 'ltr', 'loadingMessage': 'Loading\x26hellip;'}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_AttributionView', new _WidgetInfo('Attribution1', 'footer-3', null, document.getElementById('Attribution1'), {}, 'displayModeFull'));
+</script>
+
+<iframe name="oauth2relay355213391" id="oauth2relay355213391" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/postmessageRelay.html" tabindex="-1" aria-hidden="true" style="width: 1px; height: 1px; position: absolute; top: -100px;"></iframe><link type="text/css" rel="stylesheet" href="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/368954415-lightbox_bundle.css"><script type="text/javascript" src="./Embedded Innovation_ nRF24L01+ sniffer - part 2_files/1130279207-lbx.js"></script></body></html>

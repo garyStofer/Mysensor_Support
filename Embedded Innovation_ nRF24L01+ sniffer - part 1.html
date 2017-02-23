@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<!-- saved from url=(0063)http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html -->
+<html class="v2" dir="ltr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta content="width=1100" name="viewport">
+
+<meta content="blogger" name="generator">
+<link href="http://yveaux.blogspot.com/favicon.ico" rel="icon" type="image/x-icon">
+<link href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html" rel="canonical">
+<link rel="alternate" type="application/atom+xml" title="Embedded Innovation - Atom" href="http://yveaux.blogspot.com/feeds/posts/default">
+<link rel="alternate" type="application/rss+xml" title="Embedded Innovation - RSS" href="http://yveaux.blogspot.com/feeds/posts/default?alt=rss">
+<link rel="service.post" type="application/atom+xml" title="Embedded Innovation - Atom" href="https://www.blogger.com/feeds/1578010460921274916/posts/default">
+
+<link rel="alternate" type="application/atom+xml" title="Embedded Innovation - Atom" href="http://yveaux.blogspot.com/feeds/4311430648199440741/comments/default">
+<!--[if IE]><script type="text/javascript" src="https://www.blogger.com/static/v1/jsbin/4111605327-ieretrofit.js"></script>
+<![endif]-->
+<link href="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/nRF24packet_Regular.png" rel="image_src">
+<meta content="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html" property="og:url">
+<meta content="nRF24L01+ sniffer - part 1" property="og:title">
+<meta content="When working with wireless networks, or any network in general, it can be very helpfull to inspect the raw message data. Networking chips on..." property="og:description">
+<meta content="http://3.bp.blogspot.com/-lisIk3Iqcmg/U9Oj-DWNkeI/AAAAAAAAAE0/3gfIekLZY4c/w1200-h630-p-k-nu/nRF24packet_Regular.png" property="og:image">
+<!--[if IE]> <script> (function() { var html5 = ("abbr,article,aside,audio,canvas,datalist,details," + "figure,footer,header,hgroup,mark,menu,meter,nav,output," + "progress,section,time,video").split(','); for (var i = 0; i < html5.length; i++) { document.createElement(html5[i]); } try { document.execCommand('BackgroundImageCache', false, true); } catch(e) {} })(); </script> <![endif]-->
+<title>Embedded Innovation: nRF24L01+ sniffer - part 1</title>
+<link type="text/css" rel="stylesheet" href="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/1691512649-css_bundle_v2.css">
+<link type="text/css" rel="stylesheet" href="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/authorization.css">
+<style id="page-skin-1" type="text/css"><!--
+/*
+-----------------------------------------------
+Blogger Template Style
+Name:     Awesome Inc.
+Designer: Tina Chen
+URL:      tinachen.org
+----------------------------------------------- */
+/* Variable definitions
+====================
+<Variable name="keycolor" description="Main Color" type="color" default="#ffffff"/>
+<Group description="Page" selector="body">
+<Variable name="body.font" description="Font" type="font"
+default="normal normal 13px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="body.background.color" description="Background Color" type="color" default="#000000"/>
+<Variable name="body.text.color" description="Text Color" type="color" default="#ffffff"/>
+</Group>
+<Group description="Links" selector=".main-inner">
+<Variable name="link.color" description="Link Color" type="color" default="#888888"/>
+<Variable name="link.visited.color" description="Visited Color" type="color" default="#444444"/>
+<Variable name="link.hover.color" description="Hover Color" type="color" default="#cccccc"/>
+</Group>
+<Group description="Blog Title" selector=".header h1">
+<Variable name="header.font" description="Title Font" type="font"
+default="normal bold 40px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="header.text.color" description="Title Color" type="color" default="#ffffff" />
+<Variable name="header.background.color" description="Header Background" type="color" default="transparent" />
+</Group>
+<Group description="Blog Description" selector=".header .description">
+<Variable name="description.font" description="Font" type="font"
+default="normal normal 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="description.text.color" description="Text Color" type="color"
+default="#ffffff" />
+</Group>
+<Group description="Tabs Text" selector=".tabs-inner .widget li a">
+<Variable name="tabs.font" description="Font" type="font"
+default="normal bold 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="tabs.text.color" description="Text Color" type="color" default="#ffffff"/>
+<Variable name="tabs.selected.text.color" description="Selected Color" type="color" default="#ffffff"/>
+</Group>
+<Group description="Tabs Background" selector=".tabs-outer .PageList">
+<Variable name="tabs.background.color" description="Background Color" type="color" default="#141414"/>
+<Variable name="tabs.selected.background.color" description="Selected Color" type="color" default="#444444"/>
+<Variable name="tabs.border.color" description="Border Color" type="color" default="#000000"/>
+</Group>
+<Group description="Date Header" selector=".main-inner .widget h2.date-header, .main-inner .widget h2.date-header span">
+<Variable name="date.font" description="Font" type="font"
+default="normal normal 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="date.text.color" description="Text Color" type="color" default="#666666"/>
+<Variable name="date.border.color" description="Border Color" type="color" default="#000000"/>
+</Group>
+<Group description="Post Title" selector="h3.post-title, h4, h3.post-title a">
+<Variable name="post.title.font" description="Font" type="font"
+default="normal bold 22px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="post.title.text.color" description="Text Color" type="color" default="#ffffff"/>
+</Group>
+<Group description="Post Background" selector=".post">
+<Variable name="post.background.color" description="Background Color" type="color" default="#000000" />
+<Variable name="post.border.color" description="Border Color" type="color" default="#000000" />
+<Variable name="post.border.bevel.color" description="Bevel Color" type="color" default="#000000"/>
+</Group>
+<Group description="Gadget Title" selector="h2">
+<Variable name="widget.title.font" description="Font" type="font"
+default="normal bold 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="widget.title.text.color" description="Text Color" type="color" default="#ffffff"/>
+</Group>
+<Group description="Gadget Text" selector=".sidebar .widget">
+<Variable name="widget.font" description="Font" type="font"
+default="normal normal 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+<Variable name="widget.text.color" description="Text Color" type="color" default="#ffffff"/>
+<Variable name="widget.alternate.text.color" description="Alternate Color" type="color" default="#666666"/>
+</Group>
+<Group description="Gadget Links" selector=".sidebar .widget">
+<Variable name="widget.link.color" description="Link Color" type="color" default="#46bdbd"/>
+<Variable name="widget.link.visited.color" description="Visited Color" type="color" default="#46bdbd"/>
+<Variable name="widget.link.hover.color" description="Hover Color" type="color" default="#46bdbd"/>
+</Group>
+<Group description="Gadget Background" selector=".sidebar .widget">
+<Variable name="widget.background.color" description="Background Color" type="color" default="#141414"/>
+<Variable name="widget.border.color" description="Border Color" type="color" default="#222222"/>
+<Variable name="widget.border.bevel.color" description="Bevel Color" type="color" default="#000000"/>
+</Group>
+<Group description="Sidebar Background" selector=".column-left-inner .column-right-inner">
+<Variable name="widget.outer.background.color" description="Background Color" type="color" default="transparent" />
+</Group>
+<Group description="Images" selector=".main-inner">
+<Variable name="image.background.color" description="Background Color" type="color" default="transparent"/>
+<Variable name="image.border.color" description="Border Color" type="color" default="transparent"/>
+</Group>
+<Group description="Feed" selector=".blog-feeds">
+<Variable name="feed.text.color" description="Text Color" type="color" default="#ffffff"/>
+</Group>
+<Group description="Feed Links" selector=".blog-feeds">
+<Variable name="feed.link.color" description="Link Color" type="color" default="#46bdbd"/>
+<Variable name="feed.link.visited.color" description="Visited Color" type="color" default="#46bdbd"/>
+<Variable name="feed.link.hover.color" description="Hover Color" type="color" default="#46bdbd"/>
+</Group>
+<Group description="Pager" selector=".blog-pager">
+<Variable name="pager.background.color" description="Background Color" type="color" default="#141414" />
+</Group>
+<Group description="Footer" selector=".footer-outer">
+<Variable name="footer.background.color" description="Background Color" type="color" default="#000000" />
+<Variable name="footer.text.color" description="Text Color" type="color" default="#ffffff" />
+</Group>
+<Variable name="title.shadow.spread" description="Title Shadow" type="length" default="-1px" min="-1px" max="100px"/>
+<Variable name="body.background" description="Body Background" type="background"
+color="#000000"
+default="$(color) none repeat scroll top left"/>
+<Variable name="body.background.gradient.cap" description="Body Gradient Cap" type="url"
+default="none"/>
+<Variable name="body.background.size" description="Body Background Size" type="string" default="auto"/>
+<Variable name="tabs.background.gradient" description="Tabs Background Gradient" type="url"
+default="none"/>
+<Variable name="header.background.gradient" description="Header Background Gradient" type="url" default="none" />
+<Variable name="header.padding.top" description="Header Top Padding" type="length" default="22px" min="0" max="100px"/>
+<Variable name="header.margin.top" description="Header Top Margin" type="length" default="0" min="0" max="100px"/>
+<Variable name="header.margin.bottom" description="Header Bottom Margin" type="length" default="0" min="0" max="100px"/>
+<Variable name="widget.padding.top" description="Widget Padding Top" type="length" default="8px" min="0" max="20px"/>
+<Variable name="widget.padding.side" description="Widget Padding Side" type="length" default="15px" min="0" max="100px"/>
+<Variable name="widget.outer.margin.top" description="Widget Top Margin" type="length" default="0" min="0" max="100px"/>
+<Variable name="widget.outer.background.gradient" description="Gradient" type="url" default="none" />
+<Variable name="widget.border.radius" description="Gadget Border Radius" type="length" default="0" min="0" max="100px"/>
+<Variable name="outer.shadow.spread" description="Outer Shadow Size" type="length" default="0" min="0" max="100px"/>
+<Variable name="date.header.border.radius.top" description="Date Header Border Radius Top" type="length" default="0" min="0" max="100px"/>
+<Variable name="date.header.position" description="Date Header Position" type="length" default="15px" min="0" max="100px"/>
+<Variable name="date.space" description="Date Space" type="length" default="30px" min="0" max="100px"/>
+<Variable name="date.position" description="Date Float" type="string" default="static" />
+<Variable name="date.padding.bottom" description="Date Padding Bottom" type="length" default="0" min="0" max="100px"/>
+<Variable name="date.border.size" description="Date Border Size" type="length" default="0" min="0" max="10px"/>
+<Variable name="date.background" description="Date Background" type="background" color="transparent"
+default="$(color) none no-repeat scroll top left" />
+<Variable name="date.first.border.radius.top" description="Date First top radius" type="length" default="0" min="0" max="100px"/>
+<Variable name="date.last.space.bottom" description="Date Last Space Bottom" type="length"
+default="20px" min="0" max="100px"/>
+<Variable name="date.last.border.radius.bottom" description="Date Last bottom radius" type="length" default="0" min="0" max="100px"/>
+<Variable name="post.first.padding.top" description="First Post Padding Top" type="length" default="0" min="0" max="100px"/>
+<Variable name="image.shadow.spread" description="Image Shadow Size" type="length" default="0" min="0" max="100px"/>
+<Variable name="image.border.radius" description="Image Border Radius" type="length" default="0" min="0" max="100px"/>
+<Variable name="separator.outdent" description="Separator Outdent" type="length" default="15px" min="0" max="100px"/>
+<Variable name="title.separator.border.size" description="Widget Title Border Size" type="length" default="1px" min="0" max="10px"/>
+<Variable name="list.separator.border.size" description="List Separator Border Size" type="length" default="1px" min="0" max="10px"/>
+<Variable name="shadow.spread" description="Shadow Size" type="length" default="0" min="0" max="100px"/>
+<Variable name="startSide" description="Side where text starts in blog language" type="automatic" default="left"/>
+<Variable name="endSide" description="Side where text ends in blog language" type="automatic" default="right"/>
+<Variable name="date.side" description="Side where date header is placed" type="string" default="right"/>
+<Variable name="pager.border.radius.top" description="Pager Border Top Radius" type="length" default="0" min="0" max="100px"/>
+<Variable name="pager.space.top" description="Pager Top Space" type="length" default="1em" min="0" max="20em"/>
+<Variable name="footer.background.gradient" description="Background Gradient" type="url" default="none" />
+<Variable name="mobile.background.size" description="Mobile Background Size" type="string"
+default="auto"/>
+<Variable name="mobile.background.overlay" description="Mobile Background Overlay" type="string"
+default="transparent none repeat scroll top left"/>
+<Variable name="mobile.button.color" description="Mobile Button Color" type="color" default="#ffffff" />
+*/
+/* Content
+----------------------------------------------- */
+body {
+font: normal normal 13px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #ffffff;
+background: #000000 url(//themes.googleusercontent.com/image?id=1i_daHMzkzBNcV-v7uOhVYquMt20FCMbbTFxcHAARidZ6PYKs5-KeUa4Gm0erJ5vHVpot) repeat-x scroll top center /* Credit: enot-poloskun (http://www.istockphoto.com/googleimages.php?id=2904973&platform=blogger) */;
+}
+html body .content-outer {
+min-width: 0;
+max-width: 100%;
+width: 100%;
+}
+a:link {
+text-decoration: none;
+color: #46bdbd;
+}
+a:visited {
+text-decoration: none;
+color: #46bdbd;
+}
+a:hover {
+text-decoration: underline;
+color: #46bdbd;
+}
+.body-fauxcolumn-outer .cap-top {
+position: absolute;
+z-index: 1;
+height: 276px;
+width: 100%;
+background: transparent none repeat-x scroll top left;
+_background-image: none;
+}
+/* Columns
+----------------------------------------------- */
+.content-inner {
+padding: 0;
+}
+.header-inner .section {
+margin: 0 16px;
+}
+.tabs-inner .section {
+margin: 0 16px;
+}
+.main-inner {
+padding-top: 30px;
+}
+.main-inner .column-center-inner,
+.main-inner .column-left-inner,
+.main-inner .column-right-inner {
+padding: 0 5px;
+}
+*+html body .main-inner .column-center-inner {
+margin-top: -30px;
+}
+#layout .main-inner .column-center-inner {
+margin-top: 0;
+}
+/* Header
+----------------------------------------------- */
+.header-outer {
+margin: 0 0 0 0;
+background: transparent none repeat scroll 0 0;
+}
+.Header h1 {
+font: normal bold 40px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #ffffff;
+text-shadow: 0 0 -1px #000000;
+}
+.Header h1 a {
+color: #ffffff;
+}
+.Header .description {
+font: normal normal 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #ffffff;
+}
+.header-inner .Header .titlewrapper,
+.header-inner .Header .descriptionwrapper {
+padding-left: 0;
+padding-right: 0;
+margin-bottom: 0;
+}
+.header-inner .Header .titlewrapper {
+padding-top: 22px;
+}
+/* Tabs
+----------------------------------------------- */
+.tabs-outer {
+overflow: hidden;
+position: relative;
+background: #000000 none repeat scroll 0 0;
+}
+#layout .tabs-outer {
+overflow: visible;
+}
+.tabs-cap-top, .tabs-cap-bottom {
+position: absolute;
+width: 100%;
+border-top: 1px solid #222222;
+}
+.tabs-cap-bottom {
+bottom: 0;
+}
+.tabs-inner .widget li a {
+display: inline-block;
+margin: 0;
+padding: .6em 1.5em;
+font: normal bold 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #ffffff;
+border-top: 1px solid #222222;
+border-bottom: 1px solid #222222;
+border-left: 1px solid #222222;
+height: 16px;
+line-height: 16px;
+}
+.tabs-inner .widget li:last-child a {
+border-right: 1px solid #222222;
+}
+.tabs-inner .widget li.selected a, .tabs-inner .widget li a:hover {
+background: #000000 none repeat-x scroll 0 -100px;
+color: #ffffff;
+}
+/* Headings
+----------------------------------------------- */
+h2 {
+font: normal bold 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #ffffff;
+}
+/* Widgets
+----------------------------------------------- */
+.main-inner .section {
+margin: 0 27px;
+padding: 0;
+}
+.main-inner .column-left-outer,
+.main-inner .column-right-outer {
+margin-top: 0;
+}
+#layout .main-inner .column-left-outer,
+#layout .main-inner .column-right-outer {
+margin-top: 0;
+}
+.main-inner .column-left-inner,
+.main-inner .column-right-inner {
+background: transparent none repeat 0 0;
+-moz-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-webkit-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-goog-ms-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-moz-border-radius: 0;
+-webkit-border-radius: 0;
+-goog-ms-border-radius: 0;
+border-radius: 0;
+}
+#layout .main-inner .column-left-inner,
+#layout .main-inner .column-right-inner {
+margin-top: 0;
+}
+.sidebar .widget {
+font: normal normal 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #ffffff;
+}
+.sidebar .widget a:link {
+color: #888888;
+}
+.sidebar .widget a:visited {
+color: #444444;
+}
+.sidebar .widget a:hover {
+color: #cccccc;
+}
+.sidebar .widget h2 {
+text-shadow: 0 0 -1px #000000;
+}
+.main-inner .widget {
+background-color: #000000;
+border: 1px solid #000000;
+padding: 0 15px 15px;
+margin: 20px -16px;
+-moz-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-webkit-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-goog-ms-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-moz-border-radius: 0;
+-webkit-border-radius: 0;
+-goog-ms-border-radius: 0;
+border-radius: 0;
+}
+.main-inner .widget h2 {
+margin: 0 -15px;
+padding: .6em 15px .5em;
+border-bottom: 1px solid #000000;
+}
+.footer-inner .widget h2 {
+padding: 0 0 .4em;
+border-bottom: 1px solid #000000;
+}
+.main-inner .widget h2 + div, .footer-inner .widget h2 + div {
+border-top: 1px solid #000000;
+padding-top: 8px;
+}
+.main-inner .widget .widget-content {
+margin: 0 -15px;
+padding: 7px 15px 0;
+}
+.main-inner .widget ul, .main-inner .widget #ArchiveList ul.flat {
+margin: -8px -15px 0;
+padding: 0;
+list-style: none;
+}
+.main-inner .widget #ArchiveList {
+margin: -8px 0 0;
+}
+.main-inner .widget ul li, .main-inner .widget #ArchiveList ul.flat li {
+padding: .5em 15px;
+text-indent: 0;
+color: #000000;
+border-top: 1px solid #000000;
+border-bottom: 1px solid #000000;
+}
+.main-inner .widget #ArchiveList ul li {
+padding-top: .25em;
+padding-bottom: .25em;
+}
+.main-inner .widget ul li:first-child, .main-inner .widget #ArchiveList ul.flat li:first-child {
+border-top: none;
+}
+.main-inner .widget ul li:last-child, .main-inner .widget #ArchiveList ul.flat li:last-child {
+border-bottom: none;
+}
+.post-body {
+position: relative;
+}
+.main-inner .widget .post-body ul {
+padding: 0 2.5em;
+margin: .5em 0;
+list-style: disc;
+}
+.main-inner .widget .post-body ul li {
+padding: 0.25em 0;
+margin-bottom: .25em;
+color: #ffffff;
+border: none;
+}
+.footer-inner .widget ul {
+padding: 0;
+list-style: none;
+}
+.widget .zippy {
+color: #000000;
+}
+/* Posts
+----------------------------------------------- */
+body .main-inner .Blog {
+padding: 0;
+margin-bottom: 1em;
+background-color: transparent;
+border: none;
+-moz-box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+-webkit-box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+-goog-ms-box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+.main-inner .section:last-child .Blog:last-child {
+padding: 0;
+margin-bottom: 1em;
+}
+.main-inner .widget h2.date-header {
+margin: 0 -15px 1px;
+padding: 0 0 0 0;
+font: normal normal 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #46bdbd;
+background: transparent none no-repeat scroll top left;
+border-top: 0 solid #222222;
+border-bottom: 1px solid #000000;
+-moz-border-radius-topleft: 0;
+-moz-border-radius-topright: 0;
+-webkit-border-top-left-radius: 0;
+-webkit-border-top-right-radius: 0;
+border-top-left-radius: 0;
+border-top-right-radius: 0;
+position: static;
+bottom: 100%;
+right: 15px;
+text-shadow: 0 0 -1px #000000;
+}
+.main-inner .widget h2.date-header span {
+font: normal normal 14px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+display: block;
+padding: .5em 15px;
+border-left: 0 solid #222222;
+border-right: 0 solid #222222;
+}
+.date-outer {
+position: relative;
+margin: 30px 0 20px;
+padding: 0 15px;
+background-color: #141414;
+border: 1px solid #222222;
+-moz-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-webkit-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-goog-ms-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-moz-border-radius: 0;
+-webkit-border-radius: 0;
+-goog-ms-border-radius: 0;
+border-radius: 0;
+}
+.date-outer:first-child {
+margin-top: 0;
+}
+.date-outer:last-child {
+margin-bottom: 20px;
+-moz-border-radius-bottomleft: 0;
+-moz-border-radius-bottomright: 0;
+-webkit-border-bottom-left-radius: 0;
+-webkit-border-bottom-right-radius: 0;
+-goog-ms-border-bottom-left-radius: 0;
+-goog-ms-border-bottom-right-radius: 0;
+border-bottom-left-radius: 0;
+border-bottom-right-radius: 0;
+}
+.date-posts {
+margin: 0 -15px;
+padding: 0 15px;
+clear: both;
+}
+.post-outer, .inline-ad {
+border-top: 1px solid #222222;
+margin: 0 -15px;
+padding: 15px 15px;
+}
+.post-outer {
+padding-bottom: 10px;
+}
+.post-outer:first-child {
+padding-top: 0;
+border-top: none;
+}
+.post-outer:last-child, .inline-ad:last-child {
+border-bottom: none;
+}
+.post-body {
+position: relative;
+}
+.post-body img {
+padding: 8px;
+background: #000000;
+border: 1px solid transparent;
+-moz-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-webkit-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-moz-border-radius: 0;
+-webkit-border-radius: 0;
+border-radius: 0;
+}
+h3.post-title, h4 {
+font: normal bold 22px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #ffffff;
+}
+h3.post-title a {
+font: normal bold 22px Arial, Tahoma, Helvetica, FreeSans, sans-serif;
+color: #ffffff;
+}
+h3.post-title a:hover {
+color: #46bdbd;
+text-decoration: underline;
+}
+.post-header {
+margin: 0 0 1em;
+}
+.post-body {
+line-height: 1.4;
+}
+.post-outer h2 {
+color: #ffffff;
+}
+.post-footer {
+margin: 1.5em 0 0;
+}
+#blog-pager {
+padding: 15px;
+font-size: 120%;
+background-color: #141414;
+border: 1px solid #000000;
+-moz-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-webkit-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-goog-ms-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-moz-border-radius: 0;
+-webkit-border-radius: 0;
+-goog-ms-border-radius: 0;
+border-radius: 0;
+-moz-border-radius-topleft: 0;
+-moz-border-radius-topright: 0;
+-webkit-border-top-left-radius: 0;
+-webkit-border-top-right-radius: 0;
+-goog-ms-border-top-left-radius: 0;
+-goog-ms-border-top-right-radius: 0;
+border-top-left-radius: 0;
+border-top-right-radius-topright: 0;
+margin-top: 1em;
+}
+.blog-feeds, .post-feeds {
+margin: 1em 0;
+text-align: center;
+color: #ffffff;
+}
+.blog-feeds a, .post-feeds a {
+color: #888888;
+}
+.blog-feeds a:visited, .post-feeds a:visited {
+color: #444444;
+}
+.blog-feeds a:hover, .post-feeds a:hover {
+color: #cccccc;
+}
+.post-outer .comments {
+margin-top: 2em;
+}
+/* Comments
+----------------------------------------------- */
+.comments .comments-content .icon.blog-author {
+background-repeat: no-repeat;
+background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEgAACxIB0t1+/AAAAAd0SU1FB9sLFwMeCjjhcOMAAAD+SURBVDjLtZSvTgNBEIe/WRRnm3U8RC1neQdsm1zSBIU9VVF1FkUguQQsD9ITmD7ECZIJSE4OZo9stoVjC/zc7ky+zH9hXwVwDpTAWWLrgS3QAe8AZgaAJI5zYAmc8r0G4AHYHQKVwII8PZrZFsBFkeRCABYiMh9BRUhnSkPTNCtVXYXURi1FpBDgArj8QU1eVXUzfnjv7yP7kwu1mYrkWlU33vs1QNu2qU8pwN0UpKoqokjWwCztrMuBhEhmh8bD5UDqur75asbcX0BGUB9/HAMB+r32hznJgXy2v0sGLBcyAJ1EK3LFcbo1s91JeLwAbwGYu7TP/3ZGfnXYPgAVNngtqatUNgAAAABJRU5ErkJggg==);
+}
+.comments .comments-content .loadmore a {
+border-top: 1px solid #222222;
+border-bottom: 1px solid #222222;
+}
+.comments .continue {
+border-top: 2px solid #222222;
+}
+/* Footer
+----------------------------------------------- */
+.footer-outer {
+margin: -0 0 -1px;
+padding: 0 0 0;
+color: #ffffff;
+overflow: hidden;
+}
+.footer-fauxborder-left {
+border-top: 1px solid #000000;
+background: #141414 none repeat scroll 0 0;
+-moz-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-webkit-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+-goog-ms-box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+box-shadow: 0 0 0 rgba(0, 0, 0, .2);
+margin: 0 -0;
+}
+/* Mobile
+----------------------------------------------- */
+body.mobile {
+background-size: auto;
+}
+.mobile .body-fauxcolumn-outer {
+background: transparent none repeat scroll top left;
+}
+*+html body.mobile .main-inner .column-center-inner {
+margin-top: 0;
+}
+.mobile .main-inner .widget {
+padding: 0 0 15px;
+}
+.mobile .main-inner .widget h2 + div,
+.mobile .footer-inner .widget h2 + div {
+border-top: none;
+padding-top: 0;
+}
+.mobile .footer-inner .widget h2 {
+padding: 0.5em 0;
+border-bottom: none;
+}
+.mobile .main-inner .widget .widget-content {
+margin: 0;
+padding: 7px 0 0;
+}
+.mobile .main-inner .widget ul,
+.mobile .main-inner .widget #ArchiveList ul.flat {
+margin: 0 -15px 0;
+}
+.mobile .main-inner .widget h2.date-header {
+right: 0;
+}
+.mobile .date-header span {
+padding: 0.4em 0;
+}
+.mobile .date-outer:first-child {
+margin-bottom: 0;
+border: 1px solid #222222;
+-moz-border-radius-topleft: 0;
+-moz-border-radius-topright: 0;
+-webkit-border-top-left-radius: 0;
+-webkit-border-top-right-radius: 0;
+-goog-ms-border-top-left-radius: 0;
+-goog-ms-border-top-right-radius: 0;
+border-top-left-radius: 0;
+border-top-right-radius: 0;
+}
+.mobile .date-outer {
+border-color: #222222;
+border-width: 0 1px 1px;
+}
+.mobile .date-outer:last-child {
+margin-bottom: 0;
+}
+.mobile .main-inner {
+padding: 0;
+}
+.mobile .header-inner .section {
+margin: 0;
+}
+.mobile .post-outer, .mobile .inline-ad {
+padding: 5px 0;
+}
+.mobile .tabs-inner .section {
+margin: 0 10px;
+}
+.mobile .main-inner .widget h2 {
+margin: 0;
+padding: 0;
+}
+.mobile .main-inner .widget h2.date-header span {
+padding: 0;
+}
+.mobile .main-inner .widget .widget-content {
+margin: 0;
+padding: 7px 0 0;
+}
+.mobile #blog-pager {
+border: 1px solid transparent;
+background: #141414 none repeat scroll 0 0;
+}
+.mobile .main-inner .column-left-inner,
+.mobile .main-inner .column-right-inner {
+background: transparent none repeat 0 0;
+-moz-box-shadow: none;
+-webkit-box-shadow: none;
+-goog-ms-box-shadow: none;
+box-shadow: none;
+}
+.mobile .date-posts {
+margin: 0;
+padding: 0;
+}
+.mobile .footer-fauxborder-left {
+margin: 0;
+border-top: inherit;
+}
+.mobile .main-inner .section:last-child .Blog:last-child {
+margin-bottom: 0;
+}
+.mobile-index-contents {
+color: #ffffff;
+}
+.mobile .mobile-link-button {
+background: #46bdbd none repeat scroll 0 0;
+}
+.mobile-link-button a:link, .mobile-link-button a:visited {
+color: #ffffff;
+}
+.mobile .tabs-inner .PageList .widget-content {
+background: transparent;
+border-top: 1px solid;
+border-color: #222222;
+color: #ffffff;
+}
+.mobile .tabs-inner .PageList .widget-content .pagelist-arrow {
+border-left: 1px solid #222222;
+}
+
+--></style>
+<style id="template-skin-1" type="text/css"><!--
+body {
+min-width: 1230px;
+}
+.content-outer, .content-fauxcolumn-outer, .region-inner {
+min-width: 1230px;
+max-width: 1230px;
+_width: 1230px;
+}
+.main-inner .columns {
+padding-left: 0px;
+padding-right: 260px;
+}
+.main-inner .fauxcolumn-center-outer {
+left: 0px;
+right: 260px;
+/* IE6 does not respect left and right together */
+_width: expression(this.parentNode.offsetWidth -
+parseInt("0px") -
+parseInt("260px") + 'px');
+}
+.main-inner .fauxcolumn-left-outer {
+width: 0px;
+}
+.main-inner .fauxcolumn-right-outer {
+width: 260px;
+}
+.main-inner .column-left-outer {
+width: 0px;
+right: 100%;
+margin-left: -0px;
+}
+.main-inner .column-right-outer {
+width: 260px;
+margin-right: -260px;
+}
+#layout {
+min-width: 0;
+}
+#layout .content-outer {
+min-width: 0;
+width: 800px;
+}
+#layout .region-inner {
+min-width: 0;
+width: auto;
+}
+body#layout div.add_widget {
+padding: 8px;
+}
+body#layout div.add_widget a {
+margin-left: 32px;
+}
+--></style>
+<style>
+    body {background-image:url(\/\/themes.googleusercontent.com\/image?id=1i_daHMzkzBNcV-v7uOhVYquMt20FCMbbTFxcHAARidZ6PYKs5-KeUa4Gm0erJ5vHVpot);}
+    
+@media (max-width: 200px) { body {background-image:url(\/\/themes.googleusercontent.com\/image?id=1i_daHMzkzBNcV-v7uOhVYquMt20FCMbbTFxcHAARidZ6PYKs5-KeUa4Gm0erJ5vHVpot&options=w200);}}
+@media (max-width: 400px) and (min-width: 201px) { body {background-image:url(\/\/themes.googleusercontent.com\/image?id=1i_daHMzkzBNcV-v7uOhVYquMt20FCMbbTFxcHAARidZ6PYKs5-KeUa4Gm0erJ5vHVpot&options=w400);}}
+@media (max-width: 800px) and (min-width: 401px) { body {background-image:url(\/\/themes.googleusercontent.com\/image?id=1i_daHMzkzBNcV-v7uOhVYquMt20FCMbbTFxcHAARidZ6PYKs5-KeUa4Gm0erJ5vHVpot&options=w800);}}
+@media (max-width: 1200px) and (min-width: 801px) { body {background-image:url(\/\/themes.googleusercontent.com\/image?id=1i_daHMzkzBNcV-v7uOhVYquMt20FCMbbTFxcHAARidZ6PYKs5-KeUa4Gm0erJ5vHVpot&options=w1200);}}
+/* Last tag covers anything over one higher than the previous max-size cap. */
+@media (min-width: 1201px) { body {background-image:url(\/\/themes.googleusercontent.com\/image?id=1i_daHMzkzBNcV-v7uOhVYquMt20FCMbbTFxcHAARidZ6PYKs5-KeUa4Gm0erJ5vHVpot&options=w1600);}}
+  </style>
+<script src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/cb=gapi.loaded_2" async=""></script><script src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/cb=gapi.loaded_1" async=""></script><script src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/cb=gapi.loaded_0" async=""></script><script type="text/javascript">function a(){var b=window.location.href,c=b.split("?");switch(c.length){case 1:return b+"?m=1";case 2:return 0<=c[1].search("(^|&)m=")?null:b+"&m=1";default:return null}}var d=navigator.userAgent;if(-1!=d.indexOf("Mobile")&&-1!=d.indexOf("WebKit")&&-1==d.indexOf("iPad")||-1!=d.indexOf("Opera Mini")||-1!=d.indexOf("IEMobile")){var e=a();e&&window.location.replace(e)};
+</script></head>
+<body class=" variant-dark">
+<div class="navbar no-items section" id="navbar" name="Navbar">
+</div>
+<div class="body-fauxcolumns">
+<div class="fauxcolumn-outer body-fauxcolumn-outer">
+<div class="cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left">
+<div class="fauxborder-right"></div>
+<div class="fauxcolumn-inner">
+</div>
+</div>
+<div class="cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+</div>
+<div class="content">
+<div class="content-fauxcolumns">
+<div class="fauxcolumn-outer content-fauxcolumn-outer">
+<div class="cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left">
+<div class="fauxborder-right"></div>
+<div class="fauxcolumn-inner">
+</div>
+</div>
+<div class="cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+</div>
+<div class="content-outer">
+<div class="content-cap-top cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left content-fauxborder-left">
+<div class="fauxborder-right content-fauxborder-right"></div>
+<div class="content-inner">
+<header>
+<div class="header-outer">
+<div class="header-cap-top cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left header-fauxborder-left">
+<div class="fauxborder-right header-fauxborder-right"></div>
+<div class="region-inner header-inner">
+<div class="header section" id="header" name="Header"><div class="widget Header" data-version="1" id="Header1">
+<div id="header-inner">
+<div class="titlewrapper">
+<h1 class="title">
+<a href="http://yveaux.blogspot.com/">Embedded Innovation</a>
+</h1>
+</div>
+<div class="descriptionwrapper">
+<p class="description"><span>
+</span></p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+<div class="header-cap-bottom cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+</header>
+<div class="tabs-outer">
+<div class="tabs-cap-top cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left tabs-fauxborder-left">
+<div class="fauxborder-right tabs-fauxborder-right"></div>
+<div class="region-inner tabs-inner">
+<div class="tabs no-items section" id="crosscol" name="Cross-Column"></div>
+<div class="tabs no-items section" id="crosscol-overflow" name="Cross-Column 2"></div>
+</div>
+</div>
+<div class="tabs-cap-bottom cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+<div class="main-outer">
+<div class="main-cap-top cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left main-fauxborder-left">
+<div class="fauxborder-right main-fauxborder-right"></div>
+<div class="region-inner main-inner">
+<div class="columns fauxcolumns">
+<div class="fauxcolumn-outer fauxcolumn-center-outer">
+<div class="cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left">
+<div class="fauxborder-right"></div>
+<div class="fauxcolumn-inner">
+</div>
+</div>
+<div class="cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+<div class="fauxcolumn-outer fauxcolumn-left-outer">
+<div class="cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left">
+<div class="fauxborder-right"></div>
+<div class="fauxcolumn-inner">
+</div>
+</div>
+<div class="cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+<div class="fauxcolumn-outer fauxcolumn-right-outer">
+<div class="cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left">
+<div class="fauxborder-right"></div>
+<div class="fauxcolumn-inner">
+</div>
+</div>
+<div class="cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+<!-- corrects IE6 width calculation -->
+<div class="columns-inner">
+<div class="column-center-outer">
+<div class="column-center-inner">
+<div class="main section" id="main" name="Main"><div class="widget Blog" data-version="1" id="Blog1">
+<div class="blog-posts hfeed">
+
+          <div class="date-outer">
+        
+<h2 class="date-header"><span>Saturday, July 26, 2014</span></h2>
+
+          <div class="date-posts">
+        
+<div class="post-outer">
+<div class="post hentry uncustomized-post-template" itemprop="blogPost" itemscope="itemscope" itemtype="http://schema.org/BlogPosting">
+<meta content="http://3.bp.blogspot.com/-lisIk3Iqcmg/U9Oj-DWNkeI/AAAAAAAAAE0/3gfIekLZY4c/s1600/nRF24packet_Regular.png" itemprop="image_url">
+<meta content="1578010460921274916" itemprop="blogId">
+<meta content="4311430648199440741" itemprop="postId">
+<a name="4311430648199440741"></a>
+<h3 class="post-title entry-title" itemprop="name">
+nRF24L01+ sniffer - part 1
+</h3>
+<div class="post-header">
+<div class="post-header-line-1"></div>
+</div>
+<div class="post-body entry-content" id="post-body-4311430648199440741" itemprop="description articleBody">
+<span style="font-family: Trebuchet MS, sans-serif;">When working with wireless networks, or any network in general, it can be very helpfull to inspect the raw message data. Networking chips only accept messages directly addressed to them (or when broadcasteded), but most also support a so-called <i>promiscuous mode</i>. This mode allows the networking chip to capture all network traffic on air/on the wire and is used to monitor all network traffic, not just the traffic addressed to our node.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;">As a picture is worth a thousand words, a moving picture is probably worth a million words!</span><br>
+<br>
+<div style="text-align: center;">
+<iframe allowfullscreen="" frameborder="0" height="270" src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/wxjxm0LnkAk.html" width="480"></iframe></div>
+<h3>
+<span style="font-family: Trebuchet MS, sans-serif;">nRF24 sniffing</span></h3>
+<span style="font-family: Trebuchet MS, sans-serif;">The wireless 2.4GHz&nbsp;</span><span style="font-family: Trebuchet MS, sans-serif;"><a href="http://yveaux.blogspot.nl/2014/07/mysensors.html#nRF24">Nordic Semiconductor nRF24L01+</a>&nbsp;</span><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">chip&nbsp;</span><span style="font-family: Trebuchet MS, sans-serif;">(or nRF24 for short)</span><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">, which I'm experimenting with for <a href="http://yveaux.blogspot.nl/2014/07/mysensors.html">wireless domotica applications</a>, does however&nbsp;</span><i style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">not </i><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">support promiscuous mode, which in theory makes it impossible to capture network traffic between different nodes on a network.</span><br>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">Some time ago I stumbled upon a blogpost by </span><a href="http://travisgoodspeed.blogspot.nl/2011/02/promiscuity-is-nrf24l01s-duty.html" style="font-family: &#39;Trebuchet MS&#39;, sans-serif;" target="_blank">Travis Goodspeed</a><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">, in which he explains how reducing the wireless network address length of an nRF24 (together with some other tricks) allows capturing traffic not directly addressed to this chip.</span><br>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">After reading his blog and some more google'ing around I started thinking of building a 'simple' network sniffer for nRF24 traffic. I faced following requirements &amp; challenges:</span><br>
+<ul>
+<li><span style="font-family: Trebuchet MS, sans-serif;">Based on commodity, cheap hardware</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">Traffic capturing for network with known parameters (channel, baudrate, base address)</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">Analysis using <a href="http://www.wireshark.org/" target="_blank">Wireshark</a>&nbsp;network protocol analyzer</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">Possibility to analyze protocols which use the nRF24 for transport in their network</span></li>
+</ul>
+<div>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;"><br></span></div>
+<h3>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">Packet formats</span></h3>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">A regular packet is sent on air by the nRF24 in the following format (supposedly; it's not in the datasheet):</span><br>
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody>
+<tr><td style="text-align: center;"><a href="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/nRF24packet_Regular.png" imageanchor="1" style="margin-left: auto; margin-right: auto;"><img border="0" src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/nRF24packet_Regular.png"></a></td></tr>
+<tr><td class="tr-caption" style="text-align: center;"><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif; font-size: 12.8000001907349px;">Regular nRF24 packet</span></td></tr>
+</tbody></table>
+<span style="font-family: Trebuchet MS, sans-serif;">Every message starts with a preamble, which the radio uses to identify incoming packets. The target node address follows and can be specified as 3 to 5 bytes (according to Travis Goodspeed a length of 2 is also accepted by the radio, though defined as invalid in the datasheet). Then comes the fixed-size payload, followed by an optional CRC to check the integrity of the message after reception.&nbsp;</span><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">The CRC is calculated over the whole message, excluding the preamble and the CRC itself.&nbsp;</span><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">The radio must be told upfront what the length of the payload will be, as a regular packet contains no indication of the length.</span></div>
+<div class="separator" style="clear: both; text-align: left;">
+<span style="font-family: Trebuchet MS, sans-serif;">When a message received matches the receiver address of the radio and the CRC is found valid or disabled, the radio will store the <i>payload </i>in an internal FIFO for reception by the host (microcontroller or whatever connected to the nRF24 using SPI).</span></div>
+<div class="separator" style="clear: both; text-align: left;">
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div class="separator" style="clear: both; text-align: left;">
+<span style="font-family: Trebuchet MS, sans-serif;">The nRF24L01+ modules support a mode called 'Enhanced Shockburst' which has a number of advantages over regular usage (incomplete):</span></div>
+<div class="separator" style="clear: both; text-align: left;">
+</div>
+<ul>
+<li><span style="font-family: Trebuchet MS, sans-serif;">Payload lengths can be set dynamically and are part of the message</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">The receiving node can automatically send an acknowledge to the sender to indicate that the message has been received correctly. The sender will automatically retry transmission a number of times when the acknowledge is not received within a configurable timeout (Nordic calls this "Automatic packet transaction handling")</span></li>
+</ul>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">Enhanced shockburst messages are sent over the air in the following format (from the datasheet):</span><br>
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody>
+<tr><td style="text-align: center;"><a href="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/nRF24packet_EnhShockBurst.png" imageanchor="1" style="margin-left: auto; margin-right: auto;"><img border="0" src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/nRF24packet_EnhShockBurst.png"></a></td></tr>
+<tr><td class="tr-caption" style="text-align: center;"><span style="font-family: Trebuchet MS, sans-serif;">Enhanced Shockburst nRF24 packet</span></td></tr>
+</tbody></table>
+<div class="separator" style="clear: both; text-align: left;">
+<span style="font-family: Trebuchet MS, sans-serif;">As you can see a 9 bit packet control field has been added which stores the payload length (in bytes), a packet identifier (PID) to detect retransmissions and a flag to suppress sending acknowledge packets on a per-packet basis. The CRC is no longer optional.</span></div>
+<div class="separator" style="clear: both; text-align: left;">
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">As with the regular packets, a message received must match the receiver address of the radio and the CRC must be valid to have the </span><i style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">payload&nbsp;</i><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">stored&nbsp;</span><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">in the internal FIFO, otherwise the message will be discarded.</span></div>
+<div class="separator" style="clear: both; text-align: left;">
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;"><br></span></div>
+<div class="separator" style="clear: both; text-align: left;">
+<span style="font-family: Trebuchet MS, sans-serif;">Many (all?) wireless sensor applications based on the nRF24L01+ I've seen so far run the radio in Enhanced Shockburst mode.</span></div>
+<div class="separator" style="clear: both; text-align: left;">
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span></div>
+<div>
+<h3>
+<span style="font-family: Trebuchet MS, sans-serif;">Promiscuous reception</span></h3>
+</div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">When building a wireless network of many nodes you choose a single RF channel which all nodes will operate on. Furthermore each node shall have a unique address within the network (unless you're only broadcasting). Each node <i>can </i>have an arbitrary address, but normally you choose a <i>base address</i>&nbsp;which is identical for all nodes, and a <i>node address </i>which is unique for each node<i>. </i>Combined these form&nbsp;<i>the</i>&nbsp;address:</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody>
+<tr><td style="text-align: center;"><a href="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/nRF24packet_Address.png" imageanchor="1" style="margin-left: auto; margin-right: auto;"><img border="0" src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/nRF24packet_Address.png"></a></td></tr>
+<tr><td class="tr-caption" style="text-align: center;"><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif; font-size: 12.8000001907349px;">Address consisting of 4 byte base address and single byte node address</span></td></tr>
+</tbody></table>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">This example addressing scheme (4+1) is used by the </span><a href="http://www.mysensors.org/" style="font-family: &#39;Trebuchet MS&#39;, sans-serif;" target="_blank">MySensors </a><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">library and allows 255 unique nodes to be addressed (node 255 is used for broadcast addressing).</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><i><br></i></span>
+<span style="font-family: Trebuchet MS, sans-serif;"><i>Should </i>the nRF24 support promiscuous addressing, then the base address would have to be configured in the chip and it should be instructed that the node addressing consists of 1 byte. The nRF24 would then start listening for messages. All messages with matching base address and valid CRC would then be stored...</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;">But the nRF24 does not support promiscuous listening. With some trickery we can however instruct it to capture all messages for a certain base address, <i>including the ones with invalid CRC's</i> !</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif;">The following configuration of the nRF24 sniffing radio is required:</span><br>
+<br>
+<ul>
+<li><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">Set the nRF24 receiver address to just the base address</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">Disable Enhanced Shockburst</span></li>
+<li><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">Disable CRC checking</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">Configure a fixed payload size</span></li>
+</ul>
+</div>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">The first 3 items will cause the nRF24 to capture <i>anything </i>that matches the base address of the network we're sniffing. As Enhanced Shockburst is disabled, the radio will not determine the payload size from the message anymore and we just have to store a fixed amount of data starting from the Node address. We just fake the message received is a regular packet, while in fact it is an Enhanced Shockburst packet!</span><br>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">CRC checking has to be disabled of course, as the nRF24 doesn't know the payload length anymore and CRC calculation would fail, rejecting all messages.</span><br>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">The process is illustrated by the image below (again, taking the 4+1 addressing scheme as an example):</span><br>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<br>
+<table align="center" cellpadding="0" cellspacing="0" class="tr-caption-container" style="margin-left: auto; margin-right: auto; text-align: center;"><tbody>
+<tr><td style="text-align: center;"><a href="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/nRF24packet_SniffES_as_regular+%281%29.png" imageanchor="1" style="margin-left: auto; margin-right: auto;"><img border="0" src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/nRF24packet_SniffES_as_regular+%281%29.png"></a></td></tr>
+<tr><td class="tr-caption" style="text-align: center;"><span style="font-family: Trebuchet MS, sans-serif;">Capture Enhanced Shockburst packet as regular packet</span></td></tr>
+</tbody></table>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">The payload received will start with the node address the packet was transmitted to, so effectively we've created a promiscuous listening nRF24!</span><br>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">As the nRF24 will no longer dissect the packet for us, we'll have to do it ourselves (actually let Wireshark do it for us). The original length of the payload should be&nbsp;</span><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">extracted&nbsp;</span><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">(the 6 bit payload length), the full address&nbsp;</span><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">recreated&nbsp;</span><span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">and CRC calculated over the data received. When the CRC is invalid the message can be marked, which gives us a nice indication of the link quality. As the nRF24 header is not a multiple of 8 bits, all payload &amp; CRC bytes will be bit-shifted directly adjacent to the packet control field. This is inconvenient when inspecting the raw bytes in a packet, but Wireshark will solve this nicely for us.</span><br>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;"><br></span>
+<br>
+<h3>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">Limitations</span></h3>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">There are however some limitations to this method which you should be aware of:</span><br>
+<br>
+<ul>
+<li><span style="font-family: Trebuchet MS, sans-serif;">The maximum length of a payload is limited by the nRF24 to 32 bytes. As we 'shift' the reception of the payload towards the start of the packet and also want to include the CRC in the payload, the effective size of payloads captured will go down by a number of bytes. The amount depends on the number of bytes in the node address, the fixed packet control field and the length of the CRC.</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">When fixed payload size of the sniffer is set to a value&nbsp;(much)&nbsp;larger than the actual payload&nbsp;size in the packet, then subsequent packets might be missed. When the nRF24 is still capturing the fixed size payload and a new packet arrives, this will not be detected. A good example for this are the auto-acknowledge packets which can be enabled in Enhanced Shockburst mode. After the target node receives the packet (and it will know the real size of the payload a lot faster than the sniffer will) it switches its radio from receiving to transmitting mode in only 130us. Then it sends out the acknowledge packet.&nbsp;Reception of 32 bytes at 1Mb/s takes 32*8us = 256us, so acknowledge of a&nbsp;short message will definately be missed. For acknowledge packets this isn't much of a problem as the transmitter will retry to send the identical message when no acknowledge was received and we will know it missed the acknowldge.</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">This method works well for Enhanced Shockburst packages, as they have the payload size embedded in the message. For regular messages the length will have to be known or can be determined by testing different lengths until the CRC matches. With CRC disabled the payload size can only be guessed.</span></li>
+<li><span style="font-family: Trebuchet MS, sans-serif;">The addressing scheme must use a base address in the high address byte(s), and node address in the low byte(s), as explained.</span></li>
+</ul>
+<div>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;"><br></span></div>
+<h3>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif;">What's next</span></h3>
+<div>
+<span style="font-family: Trebuchet MS, sans-serif;">In the next parts of this series I will dive deeper in the hardware and software required to create the sniffer and give some nice usage examples. Furthermore a Wireshark dissector for the MySensors protocol will be presented.</span><br>
+<span style="font-family: Trebuchet MS, sans-serif;"><br></span>
+<span style="font-family: Trebuchet MS, sans-serif; font-size: x-small;"><i>Updates</i></span><br>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif; font-size: x-small;">July 27 - added youtube video</span><br>
+<span style="font-family: &#39;Trebuchet MS&#39;, sans-serif; font-size: x-small;">August 20 - updated Wireshark dissector for MySensors 1.4b to state of Aug. 18, 2014.</span></div>
+</div>
+<div style="clear: both;"></div>
+</div>
+<div class="post-footer">
+<div class="post-footer-line post-footer-line-1">
+<span class="post-author vcard">
+Posted by
+<span class="fn" itemprop="author" itemscope="itemscope" itemtype="http://schema.org/Person">
+<meta content="https://www.blogger.com/profile/16599434883652140617" itemprop="url">
+<a class="g-profile" href="https://www.blogger.com/profile/16599434883652140617" rel="author" title="author profile" data-gapiscan="true" data-onload="true" data-gapiattached="true">
+<span itemprop="name">Yveaux</span>
+</a>
+</span>
+</span>
+<span class="post-timestamp">
+at
+<meta content="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html" itemprop="url">
+<a class="timestamp-link" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html" rel="bookmark" title="permanent link"><abbr class="published" itemprop="datePublished" title="2014-07-26T20:19:00+02:00">8:19 PM</abbr></a>
+</span>
+<span class="reaction-buttons">
+</span>
+<span class="post-comment-link">
+</span>
+<span class="post-backlinks post-comment-link">
+</span>
+<span class="post-icons">
+<span class="item-control blog-admin pid-1602163402">
+<a href="https://www.blogger.com/post-edit.g?blogID=1578010460921274916&amp;postID=4311430648199440741&amp;from=pencil" title="Edit Post">
+<img alt="" class="icon-action" height="18" src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/icon18_edit_allbkg.gif" width="18">
+</a>
+</span>
+</span>
+<div class="post-share-buttons goog-inline-block">
+<a class="goog-inline-block share-button sb-email" href="https://www.blogger.com/share-post.g?blogID=1578010460921274916&amp;postID=4311430648199440741&amp;target=email" target="_blank" title="Email This"><span class="share-button-link-text">Email This</span></a><a class="goog-inline-block share-button sb-blog" href="https://www.blogger.com/share-post.g?blogID=1578010460921274916&amp;postID=4311430648199440741&amp;target=blog" onclick="window.open(this.href, &quot;_blank&quot;, &quot;height=270,width=475&quot;); return false;" target="_blank" title="BlogThis!"><span class="share-button-link-text">BlogThis!</span></a><a class="goog-inline-block share-button sb-twitter" href="https://www.blogger.com/share-post.g?blogID=1578010460921274916&amp;postID=4311430648199440741&amp;target=twitter" target="_blank" title="Share to Twitter"><span class="share-button-link-text">Share to Twitter</span></a><a class="goog-inline-block share-button sb-facebook" href="https://www.blogger.com/share-post.g?blogID=1578010460921274916&amp;postID=4311430648199440741&amp;target=facebook" onclick="window.open(this.href, &quot;_blank&quot;, &quot;height=430,width=640&quot;); return false;" target="_blank" title="Share to Facebook"><span class="share-button-link-text">Share to Facebook</span></a><a class="goog-inline-block share-button sb-pinterest" href="https://www.blogger.com/share-post.g?blogID=1578010460921274916&amp;postID=4311430648199440741&amp;target=pinterest" target="_blank" title="Share to Pinterest"><span class="share-button-link-text">Share to Pinterest</span></a><div class="goog-inline-block google-plus-share-container"><div id="___plusone_0" style="text-indent: 0px; margin: 0px; padding: 0px; border-style: none; float: none; line-height: normal; font-size: 1px; vertical-align: baseline; display: inline-block; width: 300px; height: 20px; background: transparent;"><iframe ng-non-bindable="" frameborder="0" hspace="0" marginheight="0" marginwidth="0" scrolling="no" style="position: static; top: 0px; width: 300px; margin: 0px; border-style: none; left: 0px; visibility: visible; height: 20px;" tabindex="0" vspace="0" width="100%" id="I0_1487803122834" name="I0_1487803122834" src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/fastbutton.html" data-gapiattached="true" title="+1"></iframe></div></div>
+</div>
+</div>
+<div class="post-footer-line post-footer-line-2">
+<span class="post-labels">
+Labels:
+<a href="http://yveaux.blogspot.com/search/label/nRF24" rel="tag">nRF24</a>,
+<a href="http://yveaux.blogspot.com/search/label/sniffer" rel="tag">sniffer</a>,
+<a href="http://yveaux.blogspot.com/search/label/wireless" rel="tag">wireless</a>
+</span>
+</div>
+<div class="post-footer-line post-footer-line-3">
+<span class="post-location">
+</span>
+</div>
+</div>
+</div>
+<div class="comments" id="comments">
+<a name="comments"></a>
+<h4>7 comments:</h4>
+<div class="comments-content">
+<script async="async" src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/comments.js" type="text/javascript"></script>
+<script type="text/javascript">
+    (function() {
+      var items = [{'id': '1660610756687662694', 'body': 'Hi,\x3cbr /\x3e \x3cbr /\x3ei don\x26#39;t know whether i use the nrf24l01 as scanner or not. Can i use the nrf24l01 as scanner in order to dedect the other wireless system for example bluetooth, beacons etc. ? Could you help me for this ? How i can use it for scanner ? And another my question is that if i can use your code can i see the other wireless on WIRESHARK ? My aim is to scan everything that is wireless and then to send command them.  \x3cbr /\x3e\x3cbr /\x3eThank you in advance.  ', 'timestamp': '1453907834053', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html?showComment\x3d1453907834053#c1660610756687662694', 'author': {'name': 'hakan aydın', 'avatarUrl': '//lh3.googleusercontent.com/-X1MuiN81sA8/AAAAAAAAAAI/AAAAAAAAACM/49bxt2_25HY/s35-c/photo.jpg', 'profileUrl': 'https://www.blogger.com/profile/14900066543760408763'}, 'displayTime': 'January 27, 2016 at 4:17 PM', 'deleteclass': 'item-control blog-admin pid-2118289408'}, {'id': '3364741216474078872', 'parentId': '1660610756687662694', 'body': 'Hi Hakan,\x3cbr /\x3e\x3cbr /\x3eThe scanner presented here is only fit for scanning network based on the Nordic nRF24L01+. Any other 2.4GHz networks (e.g. Bluetooth \x26amp; WiFi) cannot be sniffed.\x3cbr /\x3eI\x26#39;m not sure if I understand your question correctly, but Wireshark can be used for sniffing WiFi networks. You don\x26#39;t need this sniffer for that.\x3cbr /\x3e\x3cbr /\x3eCiao!', 'timestamp': '1453921502668', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html?showComment\x3d1453921502668#c3364741216474078872', 'author': {'name': 'Yveaux', 'avatarUrl': '//3.bp.blogspot.com/-6bVamohyx0M/VWBDTCyUsiI/AAAAAAAAAQU/NtSso3hU9rI/s35/eray.jpg', 'profileUrl': 'https://www.blogger.com/profile/16599434883652140617'}, 'displayTime': 'January 27, 2016 at 8:05 PM', 'deleteclass': 'item-control blog-admin pid-1602163402'}, {'id': '572629140013252848', 'body': 'hey,\x3cbr /\x3eI have been trying to connect the adafruit esp8266 chip and nrf24l01, although there is a library on github for this I have been trying to work it out for like a week now. can u please help me out on how to send my nrf data to cloud?\x3cbr /\x3e\x3cbr /\x3eThank you.', 'timestamp': '1469979357884', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html?showComment\x3d1469979357884#c572629140013252848', 'author': {'name': 'Anonymous', 'avatarUrl': '//img1.blogblog.com/img/blank.gif', 'profileUrl': ''}, 'displayTime': 'July 31, 2016 at 5:35 PM', 'deleteclass': 'item-control blog-admin pid-1985984681'}, {'id': '2981485946337703077', 'parentId': '572629140013252848', 'body': 'I suggest you visit www.mysensors.org. It contains all the info you need on ESP8266 and connecting nRF24L01+!', 'timestamp': '1469992315492', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html?showComment\x3d1469992315492#c2981485946337703077', 'author': {'name': 'Yveaux', 'avatarUrl': '//3.bp.blogspot.com/-6bVamohyx0M/VWBDTCyUsiI/AAAAAAAAAQU/NtSso3hU9rI/s35/eray.jpg', 'profileUrl': 'https://www.blogger.com/profile/16599434883652140617'}, 'displayTime': 'July 31, 2016 at 9:11 PM', 'deleteclass': 'item-control blog-admin pid-1602163402'}, {'id': '4663755158285638156', 'body': 'I\x26#39;m interested in listening to the transmission made by a Disney Magicband device. The magicband is a wearable that includes 2 rfid chips and one long range 2.4ghz RF transmitter. The radio is made by nordic semiconductor and seems to be a special formfactor of their nRF24LE1 device. The nRF24LE1 is described as:\x3cbr /\x3e\x3cbr /\x3eThe nRF24LE1 integrates an nRF24L01+ 2.4GHz RF transceiver core, enhanced 16MHz 8-bit 8051 compatible CPU, 1kB + 256B RAM, 16kB embedded Flash, and a wide range of system peripherals including a hardware AES accelerator, 16MHz and 32kHz RC oscillators, ultra low power 32kHz crystal oscillator, 12-bit ADC and SPI, 2-wire and UART serial interfaces.\x3cbr /\x3e\x3cbr /\x3eWhich is a lot of tech. The device is supposed to send out its serial number every so often to allow Disney infrastructure to determine individual location within the parks.\x3cbr /\x3e\x3cbr /\x3eIs it likely your method will let me receive the broadcast from the magicband?', 'timestamp': '1474408942273', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html?showComment\x3d1474408942273#c4663755158285638156', 'author': {'name': 'Chris Bright', 'avatarUrl': '//img1.blogblog.com/img/blank.gif', 'profileUrl': 'http://www.artificermade.com'}, 'displayTime': 'September 21, 2016 at 12:02 AM', 'deleteclass': 'item-control blog-admin pid-240379588'}, {'id': '2129251468612440562', 'parentId': '4663755158285638156', 'body': 'As I understand the nRF24LE1 radio packet format is identical to the nRF24L01+. This means that, in theory, you should be able to capture data from the magicband with this sniffer.\x3cbr /\x3e', 'timestamp': '1474475297999', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html?showComment\x3d1474475297999#c2129251468612440562', 'author': {'name': 'Yveaux', 'avatarUrl': '//3.bp.blogspot.com/-6bVamohyx0M/VWBDTCyUsiI/AAAAAAAAAQU/NtSso3hU9rI/s35/eray.jpg', 'profileUrl': 'https://www.blogger.com/profile/16599434883652140617'}, 'displayTime': 'September 21, 2016 at 6:28 PM', 'deleteclass': 'item-control blog-admin pid-1602163402'}, {'id': '3728193804533869720', 'body': 'Very helpful sniffer - if it works. Mine don\x26#39;t receive my RF-Packages. I\x26#39;m sending with the help of the \x26quot;TMRh20 2014 - Optimized Fork of NRF24L01+\x26quot; - Library. Could this be the reason?\x3cbr /\x3e\x3cbr /\x3eChannel, Baudrate, Adresses I have already double-checked, but my sniffer receives only sometimes a packet with crc-error. Any hint?', 'timestamp': '1487701569823', 'permalink': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html?showComment\x3d1487701569823#c3728193804533869720', 'author': {'name': 'Anonymous', 'avatarUrl': '//img1.blogblog.com/img/blank.gif', 'profileUrl': ''}, 'displayTime': 'February 21, 2017 at 7:26 PM', 'deleteclass': 'item-control blog-admin pid-394032612'}];
+      var msgs = {'loadMore': 'Load more...', 'loading': 'Loading...', 'loaded': 'No more!', 'addComment': 'Add comment', 'reply': 'Reply', 'delete': 'Delete'};
+      var config = {'blogId': '1578010460921274916', 'postId': '4311430648199440741', 'feed': 'http://yveaux.blogspot.com/feeds/4311430648199440741/comments/default', 'authorName': 'Yveaux', 'authorUrl': 'https://www.blogger.com/profile/16599434883652140617', 'baseUri': 'https://www.blogger.com', 'maxThreadDepth': 2};
+
+// <![CDATA[
+      var cursor = null;
+      if (items && items.length > 0) {
+        cursor = parseInt(items[items.length - 1].timestamp) + 1;
+      }
+
+      var bodyFromEntry = function(entry) {
+        if (entry.gd$extendedProperty) {
+          for (var k in entry.gd$extendedProperty) {
+            if (entry.gd$extendedProperty[k].name == 'blogger.contentRemoved') {
+              return '<span class="deleted-comment">' + entry.content.$t + '</span>';
+            }
+          }
+        }
+        return entry.content.$t;
+      }
+
+      var parse = function(data) {
+        cursor = null;
+        var comments = [];
+        if (data && data.feed && data.feed.entry) {
+          for (var i = 0, entry; entry = data.feed.entry[i]; i++) {
+            var comment = {};
+            // comment ID, parsed out of the original id format
+            var id = /blog-(\d+).post-(\d+)/.exec(entry.id.$t);
+            comment.id = id ? id[2] : null;
+            comment.body = bodyFromEntry(entry);
+            comment.timestamp = Date.parse(entry.published.$t) + '';
+            if (entry.author && entry.author.constructor === Array) {
+              var auth = entry.author[0];
+              if (auth) {
+                comment.author = {
+                  name: (auth.name ? auth.name.$t : undefined),
+                  profileUrl: (auth.uri ? auth.uri.$t : undefined),
+                  avatarUrl: (auth.gd$image ? auth.gd$image.src : undefined)
+                };
+              }
+            }
+            if (entry.link) {
+              if (entry.link[2]) {
+                comment.link = comment.permalink = entry.link[2].href;
+              }
+              if (entry.link[3]) {
+                var pid = /.*comments\/default\/(\d+)\?.*/.exec(entry.link[3].href);
+                if (pid && pid[1]) {
+                  comment.parentId = pid[1];
+                }
+              }
+            }
+            comment.deleteclass = 'item-control blog-admin';
+            if (entry.gd$extendedProperty) {
+              for (var k in entry.gd$extendedProperty) {
+                if (entry.gd$extendedProperty[k].name == 'blogger.itemClass') {
+                  comment.deleteclass += ' ' + entry.gd$extendedProperty[k].value;
+                } else if (entry.gd$extendedProperty[k].name == 'blogger.displayTime') {
+                  comment.displayTime = entry.gd$extendedProperty[k].value;
+                }
+              }
+            }
+            comments.push(comment);
+          }
+        }
+        return comments;
+      };
+
+      var paginator = function(callback) {
+        if (hasMore()) {
+          var url = config.feed + '?alt=json&v=2&orderby=published&reverse=false&max-results=50';
+          if (cursor) {
+            url += '&published-min=' + new Date(cursor).toISOString();
+          }
+          window.bloggercomments = function(data) {
+            var parsed = parse(data);
+            cursor = parsed.length < 50 ? null
+                : parseInt(parsed[parsed.length - 1].timestamp) + 1
+            callback(parsed);
+            window.bloggercomments = null;
+          }
+          url += '&callback=bloggercomments';
+          var script = document.createElement('script');
+          script.type = 'text/javascript';
+          script.src = url;
+          document.getElementsByTagName('head')[0].appendChild(script);
+        }
+      };
+      var hasMore = function() {
+        return !!cursor;
+      };
+      var getMeta = function(key, comment) {
+        if ('iswriter' == key) {
+          var matches = !!comment.author
+              && comment.author.name == config.authorName
+              && comment.author.profileUrl == config.authorUrl;
+          return matches ? 'true' : '';
+        } else if ('deletelink' == key) {
+          return config.baseUri + '/delete-comment.g?blogID='
+               + config.blogId + '&postID=' + comment.id;
+        } else if ('deleteclass' == key) {
+          return comment.deleteclass;
+        }
+        return '';
+      };
+
+      var replybox = null;
+      var replyUrlParts = null;
+      var replyParent = undefined;
+
+      var onReply = function(commentId, domId) {
+        if (replybox == null) {
+          // lazily cache replybox, and adjust to suit this style:
+          replybox = document.getElementById('comment-editor');
+          if (replybox != null) {
+            replybox.height = '250px';
+            replybox.style.display = 'block';
+            replyUrlParts = replybox.src.split('#');
+          }
+        }
+        if (replybox && (commentId !== replyParent)) {
+          replybox.src = '';
+          document.getElementById(domId).insertBefore(replybox, null);
+          replybox.src = replyUrlParts[0]
+              + (commentId ? '&parentID=' + commentId : '')
+              + '#' + replyUrlParts[1];
+          replyParent = commentId;
+        }
+      };
+
+      var hash = (window.location.hash || '#').substring(1);
+      var startThread, targetComment;
+      if (/^comment-form_/.test(hash)) {
+        startThread = hash.substring('comment-form_'.length);
+      } else if (/^c[0-9]+$/.test(hash)) {
+        targetComment = hash.substring(1);
+      }
+
+      // Configure commenting API:
+      var configJso = {
+        'maxDepth': config.maxThreadDepth
+      };
+      var provider = {
+        'id': config.postId,
+        'data': items,
+        'loadNext': paginator,
+        'hasMore': hasMore,
+        'getMeta': getMeta,
+        'onReply': onReply,
+        'rendered': true,
+        'initComment': targetComment,
+        'initReplyThread': startThread,
+        'config': configJso,
+        'messages': msgs
+      };
+
+      var render = function() {
+        if (window.goog && window.goog.comments) {
+          var holder = document.getElementById('comment-holder');
+          window.goog.comments.render(holder, provider);
+        }
+      };
+
+      // render now, or queue to render when library loads:
+      if (window.goog && window.goog.comments) {
+        render();
+      } else {
+        window.goog = window.goog || {};
+        window.goog.comments = window.goog.comments || {};
+        window.goog.comments.loadQueue = window.goog.comments.loadQueue || [];
+        window.goog.comments.loadQueue.push(render);
+      }
+    })();
+// ]]>
+  </script>
+<div id="comment-holder">
+
+<div id="bc_0_8C" kind="c"><div id="bc_0_8CT"><div id="bc_0_7T" class="comment-thread" kind="r" t="0" u="0"><ol id="bc_0_7TB"><li id="bc_0_1B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/photo.jpg"></div><div id="c1660610756687662694" class="comment-block"><div id="bc_0_1M" class="comment-header" kind="m"><cite class="user"><a rel="nofollow" href="https://www.blogger.com/profile/14900066543760408763">hakan aydın</a></cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html?showComment=1453907834053#c1660610756687662694">January 27, 2016 at 4:17 PM</a></span></div><p id="bc_0_1MC" class="comment-content">Hi,<br> <br>i don't know whether i use the nrf24l01 as scanner or not. Can i use the nrf24l01 as scanner in order to dedect the other wireless system for example bluetooth, beacons etc. ? Could you help me for this ? How i can use it for scanner ? And another my question is that if i can use your code can i see the other wireless on WIRESHARK ? My aim is to scan everything that is wireless and then to send command them.  <br><br>Thank you in advance.  </p><span id="bc_0_1MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin pid-2118289408"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=1660610756687662694">Delete</a></span></span></div><div id="bc_0_1BR" class="comment-replies"><span id="bc_0_1b+seedDxMjD" kind="d"><div id="bc_0_0T" class="comment-thread inline-thread" kind="t" t="0" u="0"><span id="bc_0_0TT" class="thread-toggle thread-expanded" kind="g"><span id="bc_0_0TA" class="thread-arrow"></span><span id="bc_0_0TN" class="thread-count"><span id="bc_0_0TNT" style="display: none;"></span><span id="bc_0_0TNU" style="display: none;"></span><a href="javascript:;" target="_self">Replies</a><div id="bc_0_0TD" class="thread-dropContainer thread-expanded"><span class="thread-drop"></span></div></span></span><ol id="bc_0_0TC" class="thread-chrome thread-expanded"><div><li id="bc_0_0B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/eray.jpg"></div><div id="c3364741216474078872" class="comment-block"><div id="bc_0_0M" class="comment-header" kind="m"><cite class="user blog-author"><a rel="nofollow" href="https://www.blogger.com/profile/16599434883652140617">Yveaux</a></cite><span class="icon user blog-author"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html?showComment=1453921502668#c3364741216474078872">January 27, 2016 at 8:05 PM</a></span></div><p id="bc_0_0MC" class="comment-content">Hi Hakan,<br><br>The scanner presented here is only fit for scanning network based on the Nordic nRF24L01+. Any other 2.4GHz networks (e.g. Bluetooth &amp; WiFi) cannot be sniffed.<br>I'm not sure if I understand your question correctly, but Wireshark can be used for sniffing WiFi networks. You don't need this sniffer for that.<br><br>Ciao!</p><span id="bc_0_0MN" class="comment-actions secondary-text" kind="m"><span class="item-control blog-admin pid-1602163402"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=3364741216474078872">Delete</a></span></span></div><div id="bc_0_0BR" class="comment-replies"></div><div id="bc_0_0B_box" class="comment-replybox-single"></div></li></div><div id="bc_0_0I" class="continue" kind="ci"><a href="javascript:;" target="_self">Reply</a></div></ol><div id="bc_0_0T_box" class="comment-replybox-thread"></div></div></span></div><div id="bc_0_1B_box" class="comment-replybox-single"></div></li><li id="bc_0_3B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/blank.gif"></div><div id="c572629140013252848" class="comment-block"><div id="bc_0_3M" class="comment-header" kind="m"><cite class="user">Anonymous</cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html?showComment=1469979357884#c572629140013252848">July 31, 2016 at 5:35 PM</a></span></div><p id="bc_0_3MC" class="comment-content">hey,<br>I have been trying to connect the adafruit esp8266 chip and nrf24l01, although there is a library on github for this I have been trying to work it out for like a week now. can u please help me out on how to send my nrf data to cloud?<br><br>Thank you.</p><span id="bc_0_3MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin pid-1985984681"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=572629140013252848">Delete</a></span></span></div><div id="bc_0_3BR" class="comment-replies"><span id="bc_0_3b+seedDxMlD" kind="d"><div id="bc_0_2T" class="comment-thread inline-thread" kind="t" t="0" u="0"><span id="bc_0_2TT" class="thread-toggle thread-expanded" kind="g"><span id="bc_0_2TA" class="thread-arrow"></span><span id="bc_0_2TN" class="thread-count"><span id="bc_0_2TNT" style="display: none;"></span><span id="bc_0_2TNU" style="display: none;"></span><a href="javascript:;" target="_self">Replies</a><div id="bc_0_2TD" class="thread-dropContainer thread-expanded"><span class="thread-drop"></span></div></span></span><ol id="bc_0_2TC" class="thread-chrome thread-expanded"><div><li id="bc_0_2B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/eray.jpg"></div><div id="c2981485946337703077" class="comment-block"><div id="bc_0_2M" class="comment-header" kind="m"><cite class="user blog-author"><a rel="nofollow" href="https://www.blogger.com/profile/16599434883652140617">Yveaux</a></cite><span class="icon user blog-author"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html?showComment=1469992315492#c2981485946337703077">July 31, 2016 at 9:11 PM</a></span></div><p id="bc_0_2MC" class="comment-content">I suggest you visit www.mysensors.org. It contains all the info you need on ESP8266 and connecting nRF24L01+!</p><span id="bc_0_2MN" class="comment-actions secondary-text" kind="m"><span class="item-control blog-admin pid-1602163402"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=2981485946337703077">Delete</a></span></span></div><div id="bc_0_2BR" class="comment-replies"></div><div id="bc_0_2B_box" class="comment-replybox-single"></div></li></div><div id="bc_0_2I" class="continue" kind="ci"><a href="javascript:;" target="_self">Reply</a></div></ol><div id="bc_0_2T_box" class="comment-replybox-thread"></div></div></span></div><div id="bc_0_3B_box" class="comment-replybox-single"></div></li><li id="bc_0_5B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/blank.gif"></div><div id="c4663755158285638156" class="comment-block"><div id="bc_0_5M" class="comment-header" kind="m"><cite class="user"><a rel="nofollow" href="http://www.artificermade.com/">Chris Bright</a></cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html?showComment=1474408942273#c4663755158285638156">September 21, 2016 at 12:02 AM</a></span></div><p id="bc_0_5MC" class="comment-content">I'm interested in listening to the transmission made by a Disney Magicband device. The magicband is a wearable that includes 2 rfid chips and one long range 2.4ghz RF transmitter. The radio is made by nordic semiconductor and seems to be a special formfactor of their nRF24LE1 device. The nRF24LE1 is described as:<br><br>The nRF24LE1 integrates an nRF24L01+ 2.4GHz RF transceiver core, enhanced 16MHz 8-bit 8051 compatible CPU, 1kB + 256B RAM, 16kB embedded Flash, and a wide range of system peripherals including a hardware AES accelerator, 16MHz and 32kHz RC oscillators, ultra low power 32kHz crystal oscillator, 12-bit ADC and SPI, 2-wire and UART serial interfaces.<br><br>Which is a lot of tech. The device is supposed to send out its serial number every so often to allow Disney infrastructure to determine individual location within the parks.<br><br>Is it likely your method will let me receive the broadcast from the magicband?</p><span id="bc_0_5MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin pid-240379588"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=4663755158285638156">Delete</a></span></span></div><div id="bc_0_5BR" class="comment-replies"><span id="bc_0_5b+seedDxMnD" kind="d"><div id="bc_0_4T" class="comment-thread inline-thread" kind="t" t="0" u="0"><span id="bc_0_4TT" class="thread-toggle thread-expanded" kind="g"><span id="bc_0_4TA" class="thread-arrow"></span><span id="bc_0_4TN" class="thread-count"><span id="bc_0_4TNT" style="display: none;"></span><span id="bc_0_4TNU" style="display: none;"></span><a href="javascript:;" target="_self">Replies</a><div id="bc_0_4TD" class="thread-dropContainer thread-expanded"><span class="thread-drop"></span></div></span></span><ol id="bc_0_4TC" class="thread-chrome thread-expanded"><div><li id="bc_0_4B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/eray.jpg"></div><div id="c2129251468612440562" class="comment-block"><div id="bc_0_4M" class="comment-header" kind="m"><cite class="user blog-author"><a rel="nofollow" href="https://www.blogger.com/profile/16599434883652140617">Yveaux</a></cite><span class="icon user blog-author"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html?showComment=1474475297999#c2129251468612440562">September 21, 2016 at 6:28 PM</a></span></div><p id="bc_0_4MC" class="comment-content">As I understand the nRF24LE1 radio packet format is identical to the nRF24L01+. This means that, in theory, you should be able to capture data from the magicband with this sniffer.<br></p><span id="bc_0_4MN" class="comment-actions secondary-text" kind="m"><span class="item-control blog-admin pid-1602163402"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=2129251468612440562">Delete</a></span></span></div><div id="bc_0_4BR" class="comment-replies"></div><div id="bc_0_4B_box" class="comment-replybox-single"></div></li></div><div id="bc_0_4I" class="continue" kind="ci"><a href="javascript:;" target="_self">Reply</a></div></ol><div id="bc_0_4T_box" class="comment-replybox-thread"></div></div></span></div><div id="bc_0_5B_box" class="comment-replybox-single"></div></li><li id="bc_0_6B" class="comment" kind="b"><div class="avatar-image-container"><img src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/blank.gif"></div><div id="c3728193804533869720" class="comment-block"><div id="bc_0_6M" class="comment-header" kind="m"><cite class="user">Anonymous</cite><span class="icon user"></span><span class="datetime secondary-text"><a rel="nofollow" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html?showComment=1487701569823#c3728193804533869720">February 21, 2017 at 7:26 PM</a></span></div><p id="bc_0_6MC" class="comment-content">Very helpful sniffer - if it works. Mine don't receive my RF-Packages. I'm sending with the help of the "TMRh20 2014 - Optimized Fork of NRF24L01+" - Library. Could this be the reason?<br><br>Channel, Baudrate, Adresses I have already double-checked, but my sniffer receives only sometimes a packet with crc-error. Any hint?</p><span id="bc_0_6MN" class="comment-actions secondary-text" kind="m"><a kind="i" href="javascript:;" target="_self" o="r">Reply</a><span class="item-control blog-admin pid-394032612"><a o="d" target="_self" href="https://www.blogger.com/delete-comment.g?blogID=1578010460921274916&amp;postID=3728193804533869720">Delete</a></span></span></div><div id="bc_0_6BR" class="comment-replies"></div><div id="bc_0_6B_box" class="comment-replybox-single"></div></li></ol><div id="bc_0_7I" class="continue" kind="ci" style="display: none;"><a href="javascript:;" target="_self">Add comment</a></div><div id="bc_0_7T_box" class="comment-replybox-thread"><iframe allowtransparency="true" class="blogger-iframe-colorize blogger-comment-from-post" frameborder="0" height="250px" id="comment-editor" name="comment-editor" src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/comment-iframe.html" width="100%" data-resized="true" style="display: block;"></iframe></div><div id="bc_0_7L" class="loadmore loaded" kind="rb"><a href="javascript:;" target="_self">Load more...</a></div></div></div></div></div>
+</div>
+<p class="comment-footer">
+</p><div class="comment-form">
+<a name="comment-form"></a>
+<p>
+</p>
+<a href="https://www.blogger.com/comment-iframe.g?blogID=1578010460921274916&amp;postID=4311430648199440741&amp;blogspotRpcToken=6654450" id="comment-editor-src"></a>
+
+<script type="text/javascript" src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/1003877814-comment_from_post_iframe.js"></script>
+<script type="text/javascript">
+      BLOG_CMT_createIframe('https://www.blogger.com/rpc_relay.html');
+    </script>
+</div>
+<p></p>
+<div id="backlinks-container">
+<div id="Blog1_backlinks-container">
+</div>
+</div>
+</div>
+</div>
+
+        </div></div>
+      
+</div>
+<div class="blog-pager" id="blog-pager">
+<span id="blog-pager-newer-link">
+<a class="blog-pager-newer-link" href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html" id="Blog1_blog-pager-newer-link" title="Newer Post">Newer Post</a>
+</span>
+<span id="blog-pager-older-link">
+<a class="blog-pager-older-link" href="http://yveaux.blogspot.com/2014/07/changing-arduino-bootloader-to-optiboot.html" id="Blog1_blog-pager-older-link" title="Older Post">Older Post</a>
+</span>
+<a class="home-link" href="http://yveaux.blogspot.com/">Home</a>
+</div>
+<div class="clear"></div>
+<div class="post-feeds">
+<div class="feed-links">
+Subscribe to:
+<a class="feed-link" href="http://yveaux.blogspot.com/feeds/4311430648199440741/comments/default" target="_blank" type="application/atom+xml">Post Comments (Atom)</a>
+</div>
+</div>
+<script type="text/javascript">window.___gcfg = {'lang': 'en'};</script>
+</div></div>
+</div>
+</div>
+<div class="column-left-outer">
+<div class="column-left-inner">
+<aside>
+</aside>
+</div>
+</div>
+<div class="column-right-outer">
+<div class="column-right-inner">
+<aside>
+<div class="sidebar section" id="sidebar-right-1"><div class="widget Text" data-version="1" id="Text1">
+<h2 class="title">For hire!</h2>
+<div class="widget-content">
+<div><span style="font-family: Trebuchet MS, sans-serif;"><span style="font-family:Trebuchet MS, sans-serif;"></span><span style="font-family: Trebuchet MS, sans-serif; font-style: normal; font-variant: normal; font-weight: normal; line-height: normal;font-family: Trebuchet MS, sans-serif;, serif;font-size:100%;">I'm a freelance embedded software designer who's always looking for new challenges!</span></span></div><div style="font-style: normal; font-variant: normal; font-weight: normal; line-height: normal;font-family: Trebuchet MS, sans-serif;font-size:100%;"><span style="font-family: Trebuchet MS, sans-serif;"><span style="font-size:100%;">Please visit my company's website at </span></span><a href="http://www.emmission.nl/" style="font-family: Trebuchet MS, sans-serif; font-size: 100%; font-style: normal; font-variant: normal; font-weight: normal; line-height: normal;">www.emmission.nl</a></div>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=1578010460921274916&amp;widgetType=Text&amp;widgetId=Text1&amp;action=editWidget&amp;sectionId=sidebar-right-1" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;Text1&quot;));" target="configText1" title="Edit">
+<img alt="" height="18" src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div><div class="widget Profile" data-version="1" id="Profile1">
+<h2>About Me</h2>
+<div class="widget-content">
+<a href="https://www.blogger.com/profile/16599434883652140617"><img alt="My photo" class="profile-img" height="80" src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/eray(1).jpg" width="80"></a>
+<dl class="profile-datablock">
+<dt class="profile-data">
+<a class="profile-name-link g-profile" href="https://www.blogger.com/profile/16599434883652140617" rel="author" style="background-image: url(//www.blogger.com/img/logo-16.png);" data-gapiscan="true" data-onload="true" data-gapiattached="true">
+Yveaux
+</a>
+</dt>
+<dd class="profile-data">Netherlands</dd>
+</dl>
+<a class="profile-link" href="https://www.blogger.com/profile/16599434883652140617" rel="author">View my complete profile</a>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=1578010460921274916&amp;widgetType=Profile&amp;widgetId=Profile1&amp;action=editWidget&amp;sectionId=sidebar-right-1" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;Profile1&quot;));" target="configProfile1" title="Edit">
+<img alt="" height="18" src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div>
+</div><div class="widget BlogArchive" data-version="1" id="BlogArchive1">
+<h2>Blog Archive</h2>
+<div class="widget-content">
+<div id="ArchiveList">
+<div id="BlogArchive1_ArchiveList">
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://yveaux.blogspot.com/search?updated-min=2015-01-01T00:00:00%2B01:00&amp;updated-max=2016-01-01T00:00:00%2B01:00&amp;max-results=1">
+2015
+</a>
+<span class="post-count" dir="ltr">(1)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://yveaux.blogspot.com/2015_08_01_archive.html">
+August
+</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate expanded">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy toggle-open">
+
+        ▼&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://yveaux.blogspot.com/search?updated-min=2014-01-01T00:00:00%2B01:00&amp;updated-max=2015-01-01T00:00:00%2B01:00&amp;max-results=6">
+2014
+</a>
+<span class="post-count" dir="ltr">(6)</span>
+<ul class="hierarchy">
+<li class="archivedate collapsed">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy">
+
+        ►&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://yveaux.blogspot.com/2014_08_01_archive.html">
+August
+</a>
+<span class="post-count" dir="ltr">(1)</span>
+</li>
+</ul>
+<ul class="hierarchy">
+<li class="archivedate expanded">
+<a class="toggle" href="javascript:void(0)">
+<span class="zippy toggle-open">
+
+        ▼&nbsp;
+      
+</span>
+</a>
+<a class="post-count-link" href="http://yveaux.blogspot.com/2014_07_01_archive.html">
+July
+</a>
+<span class="post-count" dir="ltr">(5)</span>
+<ul class="posts">
+<li><a href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-3.html">nRF24L01+ sniffer - part 3</a></li>
+<li><a href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-2.html">nRF24L01+ sniffer - part 2</a></li>
+<li><a href="http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html">nRF24L01+ sniffer - part 1</a></li>
+<li><a href="http://yveaux.blogspot.com/2014/07/changing-arduino-bootloader-to-optiboot.html">Changing Arduino bootloader to Optiboot</a></li>
+<li><a href="http://yveaux.blogspot.com/2014/07/mysensors.html">MySensors</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=1578010460921274916&amp;widgetType=BlogArchive&amp;widgetId=BlogArchive1&amp;action=editWidget&amp;sectionId=sidebar-right-1" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;BlogArchive1&quot;));" target="configBlogArchive1" title="Edit">
+<img alt="" height="18" src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div>
+</div></div>
+</aside>
+</div>
+</div>
+</div>
+<div style="clear: both"></div>
+<!-- columns -->
+</div>
+<!-- main -->
+</div>
+</div>
+<div class="main-cap-bottom cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+<footer>
+<div class="footer-outer">
+<div class="footer-cap-top cap-top">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+<div class="fauxborder-left footer-fauxborder-left">
+<div class="fauxborder-right footer-fauxborder-right"></div>
+<div class="region-inner footer-inner">
+<div class="foot no-items section" id="footer-1"></div>
+<table border="0" cellpadding="0" cellspacing="0" class="section-columns columns-2">
+<tbody>
+<tr>
+<td class="first columns-cell">
+<div class="foot no-items section" id="footer-2-1"></div>
+</td>
+<td class="columns-cell">
+<div class="foot no-items section" id="footer-2-2"></div>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- outside of the include in order to lock Attribution widget -->
+<div class="foot section" id="footer-3" name="Footer"><div class="widget Attribution" data-version="1" id="Attribution1">
+<div class="widget-content" style="text-align: center;">
+© 2014 Yveaux<br>. Awesome Inc. template. Template images by <a href="http://www.istockphoto.com/googleimages.php?id=2904973&amp;platform=blogger&amp;langregion=en" target="_blank">enot-poloskun</a>. Powered by <a href="https://www.blogger.com/" target="_blank">Blogger</a>.
+</div>
+<div class="clear"></div>
+<span class="widget-item-control">
+<span class="item-control blog-admin">
+<a class="quickedit" href="http://www.blogger.com/rearrange?blogID=1578010460921274916&amp;widgetType=Attribution&amp;widgetId=Attribution1&amp;action=editWidget&amp;sectionId=footer-3" onclick="return _WidgetManager._PopupConfig(document.getElementById(&quot;Attribution1&quot;));" target="configAttribution1" title="Edit">
+<img alt="" height="18" src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/icon18_wrench_allbkg.png" width="18">
+</a>
+</span>
+</span>
+<div class="clear"></div>
+</div></div>
+</div>
+</div>
+<div class="footer-cap-bottom cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+</footer>
+<!-- content -->
+</div>
+</div>
+<div class="content-cap-bottom cap-bottom">
+<div class="cap-left"></div>
+<div class="cap-right"></div>
+</div>
+</div>
+</div>
+<script type="text/javascript">
+    window.setTimeout(function() {
+        document.body.className = document.body.className.replace('loading', '');
+      }, 10);
+  </script>
+
+<script type="text/javascript" src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/1016236460-widgets.js"></script>
+<script type="text/javascript" src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/plusone.js" gapi_processed="true"></script>
+<script type="text/javascript">
+window['__wavt'] = 'AOuZoY66tPov_CwRC3Tf99iHXDObyelJWg:1487802976206';_WidgetManager._Init('//www.blogger.com/rearrange?blogID\x3d1578010460921274916','//yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html','1578010460921274916');
+_WidgetManager._SetDataContext([{'name': 'blog', 'data': {'blogId': '1578010460921274916', 'bloggerUrl': 'https://www.blogger.com', 'title': 'Embedded Innovation', 'pageType': 'item', 'postId': '4311430648199440741', 'url': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html', 'canonicalUrl': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html', 'homepageUrl': 'http://yveaux.blogspot.com/', 'searchUrl': 'http://yveaux.blogspot.com/search', 'canonicalHomepageUrl': 'http://yveaux.blogspot.com/', 'blogspotFaviconUrl': 'http://yveaux.blogspot.com/favicon.ico', 'hasCustomDomain': false, 'enabledCommentProfileImages': true, 'gPlusViewType': 'FILTERED_POSTMOD', 'adultContent': false, 'analyticsAccountNumber': '', 'useUniversalAnalytics': false, 'pageName': 'nRF24L01+ sniffer - part 1', 'pageTitle': 'Embedded Innovation: nRF24L01+ sniffer - part 1', 'encoding': 'UTF-8', 'locale': 'en', 'localeUnderscoreDelimited': 'en', 'isPrivate': false, 'isMobile': false, 'isMobileRequest': false, 'mobileClass': '', 'isPrivateBlog': false, 'languageDirection': 'ltr', 'feedLinks': '\x3clink rel\x3d\x22alternate\x22 type\x3d\x22application/atom+xml\x22 title\x3d\x22Embedded Innovation - Atom\x22 href\x3d\x22http://yveaux.blogspot.com/feeds/posts/default\x22 /\x3e\n\x3clink rel\x3d\x22alternate\x22 type\x3d\x22application/rss+xml\x22 title\x3d\x22Embedded Innovation - RSS\x22 href\x3d\x22http://yveaux.blogspot.com/feeds/posts/default?alt\x3drss\x22 /\x3e\n\x3clink rel\x3d\x22service.post\x22 type\x3d\x22application/atom+xml\x22 title\x3d\x22Embedded Innovation - Atom\x22 href\x3d\x22https://www.blogger.com/feeds/1578010460921274916/posts/default\x22 /\x3e\n\n\x3clink rel\x3d\x22alternate\x22 type\x3d\x22application/atom+xml\x22 title\x3d\x22Embedded Innovation - Atom\x22 href\x3d\x22http://yveaux.blogspot.com/feeds/4311430648199440741/comments/default\x22 /\x3e\n', 'meTag': '', 'openIdOpTag': '', 'postImageThumbnailUrl': 'http://3.bp.blogspot.com/-lisIk3Iqcmg/U9Oj-DWNkeI/AAAAAAAAAE0/3gfIekLZY4c/s72-c/nRF24packet_Regular.png', 'postImageUrl': 'http://3.bp.blogspot.com/-lisIk3Iqcmg/U9Oj-DWNkeI/AAAAAAAAAE0/3gfIekLZY4c/s1600/nRF24packet_Regular.png', 'mobileHeadScript': '', 'adsenseHostId': 'ca-host-pub-1556223355139109', 'ieCssRetrofitLinks': '\x3c!--[if IE]\x3e\x3cscript type\x3d\x22text/javascript\x22 src\x3d\x22https://www.blogger.com/static/v1/jsbin/4111605327-ieretrofit.js\x22\x3e\x3c/script\x3e\n\x3c![endif]--\x3e', 'view': '', 'dynamicViewsCommentsSrc': '//www.blogblog.com/dynamicviews/4224c15c4e7c9321/js/comments.js', 'dynamicViewsScriptSrc': '//www.blogblog.com/dynamicviews/3e30a86b28853a80', 'plusOneApiSrc': 'https://apis.google.com/js/plusone.js', 'sharing': {'platforms': [{'name': 'Get link', 'key': 'link', 'shareMessage': 'Get link', 'target': ''}, {'name': 'Facebook', 'key': 'facebook', 'shareMessage': 'Share to Facebook', 'target': 'facebook'}, {'name': 'BlogThis!', 'key': 'blogThis', 'shareMessage': 'BlogThis!', 'target': 'blog'}, {'name': 'Twitter', 'key': 'twitter', 'shareMessage': 'Share to Twitter', 'target': 'twitter'}, {'name': 'Pinterest', 'key': 'pinterest', 'shareMessage': 'Share to Pinterest', 'target': 'pinterest'}, {'name': 'Google+', 'key': 'googlePlus', 'shareMessage': 'Share to Google+', 'target': 'googleplus'}, {'name': 'Email', 'key': 'email', 'shareMessage': 'Email', 'target': 'email'}], 'googlePlusShareButtonWidth': 300, 'googlePlusBootstrap': '\x3cscript type\x3d\x22text/javascript\x22\x3ewindow.___gcfg \x3d {\x27lang\x27: \x27en\x27};\x3c/script\x3e'}}}, {'name': 'features', 'data': {'enhancedSourcesets': 'true', 'unsupported_browser_message': 'false'}}, {'name': 'messages', 'data': {'linkCopiedToClipboard': 'Link copied to clipboard!', 'postLink': 'Post Link'}}, {'name': 'template', 'data': {'name': 'Awesome Inc.', 'localizedName': 'Awesome Inc.', 'variant': 'dark', 'isResponsive': false, 'isAlternateRendering': false, 'isCustom': false}}, {'name': 'view', 'data': {'classic': {'name': 'classic', 'url': '?view\x3dclassic'}, 'flipcard': {'name': 'flipcard', 'url': '?view\x3dflipcard'}, 'magazine': {'name': 'magazine', 'url': '?view\x3dmagazine'}, 'mosaic': {'name': 'mosaic', 'url': '?view\x3dmosaic'}, 'sidebar': {'name': 'sidebar', 'url': '?view\x3dsidebar'}, 'snapshot': {'name': 'snapshot', 'url': '?view\x3dsnapshot'}, 'timeslide': {'name': 'timeslide', 'url': '?view\x3dtimeslide'}, 'isMobile': false, 'title': 'nRF24L01+ sniffer - part 1', 'description': 'When working with wireless networks, or any network in general, it can be very helpfull to inspect the raw message data. Networking chips on...', 'featuredImage': 'http://3.bp.blogspot.com/-lisIk3Iqcmg/U9Oj-DWNkeI/AAAAAAAAAE0/3gfIekLZY4c/s1600/nRF24packet_Regular.png', 'url': 'http://yveaux.blogspot.com/2014/07/nrf24l01-sniffer-part-1.html', 'type': 'item', 'isSingleItem': true, 'isMultipleItems': false, 'isError': false, 'isPage': false, 'isPost': true, 'isHomepage': false, 'isArchive': false, 'isLabelSearch': false, 'postId': 4311430648199440741}}]);
+_WidgetManager._RegisterWidget('_HeaderView', new _WidgetInfo('Header1', 'header', null, document.getElementById('Header1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogView', new _WidgetInfo('Blog1', 'main', null, document.getElementById('Blog1'), {'cmtInteractionsEnabled': false, 'lightboxEnabled': true, 'lightboxModuleUrl': 'https://www.blogger.com/static/v1/jsbin/1130279207-lbx.js', 'lightboxCssUrl': 'https://www.blogger.com/static/v1/v-css/368954415-lightbox_bundle.css'}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_TextView', new _WidgetInfo('Text1', 'sidebar-right-1', null, document.getElementById('Text1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_ProfileView', new _WidgetInfo('Profile1', 'sidebar-right-1', null, document.getElementById('Profile1'), {}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_BlogArchiveView', new _WidgetInfo('BlogArchive1', 'sidebar-right-1', null, document.getElementById('BlogArchive1'), {'languageDirection': 'ltr', 'loadingMessage': 'Loading\x26hellip;'}, 'displayModeFull'));
+_WidgetManager._RegisterWidget('_AttributionView', new _WidgetInfo('Attribution1', 'footer-3', null, document.getElementById('Attribution1'), {}, 'displayModeFull'));
+</script>
+
+<iframe name="oauth2relay651308604" id="oauth2relay651308604" src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/postmessageRelay.html" tabindex="-1" aria-hidden="true" style="width: 1px; height: 1px; position: absolute; top: -100px;"></iframe><link type="text/css" rel="stylesheet" href="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/368954415-lightbox_bundle.css"><script type="text/javascript" src="./Embedded Innovation_ nRF24L01+ sniffer - part 1_files/1130279207-lbx.js"></script></body></html>
